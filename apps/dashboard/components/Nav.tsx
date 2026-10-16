@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CommandPalette, type PaletteItem } from "./CommandPalette";
+import { LiveStatus } from "./LiveStatus";
+import { ThemeToggle } from "./ThemeToggle";
 
 const links = [
   { href: "/", label: "Overview" },
@@ -9,9 +12,13 @@ const links = [
   { href: "/repeats", label: "Caught repeats" },
 ];
 
-export function Nav({ repo }: { repo: string }) {
+export function Nav({ repo, items }: { repo: string; items: PaletteItem[] }) {
   const path = usePathname();
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
+  const palette: PaletteItem[] = [
+    ...links.map((l) => ({ href: l.href, label: l.label, hint: "Page", group: "Pages" as const })),
+    ...items,
+  ];
   return (
     <header className="nav">
       <div className="nav-inner">
@@ -32,10 +39,11 @@ export function Nav({ repo }: { repo: string }) {
             </Link>
           ))}
         </nav>
-        <span className="watching" title="Repository being read">
-          <span className="pulse" aria-hidden="true" />
-          {repo}
-        </span>
+        <div className="nav-tools">
+          <CommandPalette items={palette} />
+          <LiveStatus repo={repo} />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
