@@ -13,6 +13,21 @@ TapWire closes that loop for beginners and solo builders who code with agents (C
 3. **Feed back**: `scar export` writes a managed "Scars" section into `AGENTS.md` and `CLAUDE.md`, so the agent reads past mistakes before it codes.
 4. **Measure**: the dashboard shows the **Amnesia Rate** = repeats ÷ (repeats + new mistakes), over time.
 
+![TapWire dashboard overview in dark mode: Amnesia Rate, segmented meter, rate-over-time chart with an event lane](docs/screenshots/overview-dark.png)
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/scars-dark.png" alt="Scars list with severity filter"></td>
+    <td><img src="docs/screenshots/repeats-dark.png" alt="Incident log of blocked repeats"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/scar-detail-dark.png" alt="Scar detail with before and after"></td>
+    <td><img src="docs/screenshots/overview-light.png" alt="Overview in light mode"></td>
+  </tr>
+</table>
+
+*Screenshots show the generated demo repo; its history is sample data.*
+
 ## 30-second quickstart
 
 You need Node 20+ and git. No API key is required: the demo runs in mock mode.
@@ -43,7 +58,15 @@ npm run scar -- --repo /path/to/your/repo export
 SCAR_REPO=/path/to/your/repo npm run dev --workspace @scar/dashboard
 ```
 
-`scar check` exits `1` when it finds a repeat, `0` when clean and `2` on errors, so it can be used in a git hook or CI step.
+`scar check` exits `1` when it finds a repeat, `0` when clean and `2` on errors, so it can be used in a CI step.
+
+To block bad commits automatically, install the pre-commit hook:
+
+```bash
+npm run scar -- --repo /path/to/your/repo hook install     # remove with: hook uninstall
+```
+
+The hook runs `scar check --staged` before every commit and refuses the commit if a scar comes back (bypass once with `git commit --no-verify`). It never overwrites a pre-commit hook it did not write.
 
 ## Mock mode (no API key)
 
