@@ -53,6 +53,7 @@ Re-run `npm run demo:setup` at any time to rebuild the demo from scratch.
 - **Live updates:** the page re-reads `.scars/` every few seconds, so run `npm run demo:repeat` with the Overview open and watch the rate change without reloading. Pause it with the repo pill in the top bar.
 - **Inspect the chart:** hover it (or focus it and use the arrow keys) to see any day's rate and what happened that day.
 - **Search anything:** press `/` or `Ctrl`/`⌘` + `K` to jump to a page or a scar.
+- **Try it:** open `/try`, paste code (or pick an example) and see which scars it trips, line by line, with no terminal. Nothing is saved.
 - **Scars page:** filter by text and severity, and sort by newest, most repeated or most severe.
 - **Copy as agent rule:** on a scar, copy a ready-made rule to paste into your agent's instructions.
 - **Light, dark or system theme** from the toggle in the top bar.

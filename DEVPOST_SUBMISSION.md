@@ -40,6 +40,8 @@ Record the terminal and the dashboard in a clean window with no other apps, tabs
 | 1:55 to 2:10 | **Feed it back** | `scar export` output, then open the "Scars" section in `AGENTS.md`. |
 | 2:10 to 2:30 | **Result and impact** | Dashboard: "Caught repeats" feed with the new entry, gauge at 33%, scar detail with before/after. End on the Overview. |
 
+Optional extra beats if there is time (keep the total under 3:00): the "Try it" page (`/try`, paste code and watch it flag the line), and the pre-commit hook refusing a commit (`npm run scar -- --repo demo-repo hook install`, then try to commit the repeated line). With the Overview open during `npm run demo:repeat`, the dashboard updates itself without a reload, which films well.
+
 Take notes while recording: the Amnesia Rate goes 29% → 25% (capture) → 33% (repeat caught). If you want the closing beat to show the rate falling, capture one more scar after the repeat instead of ending on the feed.
 
 ## 4. Pre-submit checklist
