@@ -1,12 +1,15 @@
 #!/usr/bin/env -S npx tsx
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Command } from "commander";
 import {
   captureScar,
   checkRepo,
   computeAmnesiaRate,
   exportScars,
+  installHook,
   isMock,
+  uninstallHook,
   readEvents,
   readScars,
   ScarError,
@@ -86,6 +89,34 @@ program
     try {
       const files = exportScars(repoOf());
       console.log(c.green(`✔ Updated the Scars section in ${files.join(" and ")}.`));
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+const hook = program.command("hook").description("Block commits that reintroduce a past scar");
+
+hook
+  .command("install")
+  .description("Install a pre-commit hook that runs `scar check --staged`")
+  .action(() => {
+    try {
+      const cli = fileURLToPath(import.meta.url).replace(/\\/g, "/");
+      const node = process.execPath.replace(/\\/g, "/");
+      const path = installHook(repoOf(), `"${node}" --import tsx "${cli}" --repo "$(git rev-parse --show-toplevel)" check --staged`);
+      console.log(c.green(`✔ Pre-commit hook installed at ${path}`));
+      console.log(c.dim("  Commits that reintroduce a scar are now blocked. Bypass once with: git commit --no-verify"));
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+hook
+  .command("uninstall")
+  .description("Remove the TapWire pre-commit hook")
+  .action(() => {
+    try {
+      console.log(uninstallHook(repoOf()) ? c.green("✔ Hook removed.") : c.dim("No TapWire hook was installed."));
     } catch (err) {
       fail(err);
     }

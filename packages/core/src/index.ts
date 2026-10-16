@@ -7,4 +7,5 @@ export * from "./llm";
 export * from "./capture";
 export * from "./check";
 export * from "./export";
+export * from "./hook";
 export { MOCK_SCARS } from "./fixtures";
