@@ -1,0 +1,11 @@
+{
+  "name": "@scar/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": { "scar": "src/index.ts" },
+  "dependencies": {
+    "@scar/core": "*",
+    "commander": "^12.1.0"
+  }
+}

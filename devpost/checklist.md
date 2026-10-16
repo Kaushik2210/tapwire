@@ -9,7 +9,7 @@ Build mode: fast (the learner asked to finish fast; hands-on checkpoints are lef
 
 ## Slices
 
-- [ ] **1. You can capture a scar from a fixing commit (mock mode)**
+- [x] **1. You can capture a scar from a fixing commit (mock mode)**
   Becomes usable: `scar capture <sha>` in a git repo writes a scar to `.scars/scars.json` and a `new_mistake` event, with no API key.
   Why now: The kernel starts with remembering a mistake; this also bootstraps the monorepo and the core store every later slice uses.
   PRD ref: `prd.md > Capture`
@@ -19,7 +19,7 @@ Build mode: fast (the learner asked to finish fast; hands-on checkpoints are lef
   Learner check: Run the capture command in a scratch repo and read the scar it wrote.
   Commit: `Add scar capture and core store`
 
-- [ ] **2. Scar Tissue catches a repeat of a past mistake**
+- [x] **2. Scar Tissue catches a repeat of a past mistake**
   Becomes usable: `scar check` flags reintroduced mistakes by file and line, logs repeat events and exits non-zero.
   Why now: This is the unique kernel (enforcement), so it comes straight after capture.
   PRD ref: `prd.md > Guard`
@@ -29,7 +29,7 @@ Build mode: fast (the learner asked to finish fast; hands-on checkpoints are lef
   Learner check: Introduce a past mistake in a file and run `scar check` to see it blocked.
   Commit: `Add scar check with regex and semantic matching`
 
-- [ ] **3. The Amnesia Rate and export to AGENTS.md / CLAUDE.md**
+- [x] **3. The Amnesia Rate and export to AGENTS.md / CLAUDE.md**
   Becomes usable: Rate computation (with trend buckets) and `scar export` writing a managed section idempotently.
   Why now: Completes the CLI side of the loop and the number the dashboard will show.
   PRD ref: `prd.md > Measure`, `prd.md > Feed back`
