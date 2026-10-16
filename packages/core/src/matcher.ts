@@ -34,20 +34,19 @@ export function matchRegex(scars: Scar[], added: AddedLine[]): Hit[] {
   return hits;
 }
 
-const tokens = (s: string) => new Set(s.toLowerCase().match(/[a-z_][a-z0-9_]{2,}/g) ?? []);
+const squash = (s: string) => s.toLowerCase().replace(/[\s"'`;]/g, "");
 
-/** Offline stand-in for the LLM pass (mock mode): token overlap with the scar's bad pattern. */
-export function matchSimilar(scars: Scar[], added: AddedLine[], threshold = 0.6): Hit[] {
+/**
+ * Offline stand-in for the LLM pass (mock mode): matches the scar's bad pattern after ignoring
+ * whitespace, quote style and semicolons, so reformatted copies of a mistake are still caught.
+ */
+export function matchSimilar(scars: Scar[], added: AddedLine[]): Hit[] {
   const hits: Hit[] = [];
   for (const scar of scars) {
-    const bad = tokens(scar.badPattern);
-    if (bad.size < 3) continue;
+    const bad = squash(scar.badPattern.split("\n")[0]);
+    if (bad.length < 8) continue;
     for (const l of added) {
-      const t = tokens(l.text);
-      if (t.size === 0) continue;
-      let shared = 0;
-      for (const w of t) if (bad.has(w)) shared++;
-      if (shared / Math.min(bad.size, t.size) >= threshold) {
+      if (squash(l.text).includes(bad)) {
         hits.push({
           scarId: scar.id,
           file: l.file,

@@ -5,15 +5,21 @@
   "description": "Turns every mistake an AI coding agent makes into a permanent, enforced rule, and measures how often it repeats fixed mistakes.",
   "license": "MIT",
   "type": "module",
-  "workspaces": ["packages/*", "apps/*"],
-  "engines": { "node": ">=20" },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "scar": "tsx packages/cli/src/index.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit -p packages/core && tsc --noEmit -p packages/cli",
+    "typecheck": "tsc --noEmit -p packages/core && tsc --noEmit -p packages/cli && tsc --noEmit -p apps/dashboard",
     "demo": "tsx demo/setup.ts && npm run dev --workspace @scar/dashboard",
     "demo:setup": "tsx demo/setup.ts",
-    "demo:repeat": "tsx demo/repeat.ts"
+    "demo:repeat": "tsx demo/repeat.ts",
+    "demo:capture": "tsx demo/capture.ts"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

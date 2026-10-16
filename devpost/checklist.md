@@ -39,7 +39,7 @@ Build mode: fast (the learner asked to finish fast; hands-on checkpoints are lef
   Learner check: Run `scar export` and open the instruction files to read the Scars section.
   Commit: `Add Amnesia Rate and scar export`
 
-- [ ] **4. Dashboard Overview shows the Amnesia Rate**
+- [x] **4. Dashboard Overview shows the Amnesia Rate**
   Becomes usable: Next.js dashboard Overview with gauge, trend chart, headline stat, navigation, theme and empty/loading/error states.
   Why now: The dashboard is the second half of the demo and a judging criterion; get the visible loop early.
   PRD ref: `prd.md > Dashboard`, `prd.md > States and Boundaries`
@@ -49,7 +49,7 @@ Build mode: fast (the learner asked to finish fast; hands-on checkpoints are lef
   Learner check: Open the dashboard in light and dark mode and at phone width.
   Commit: `Add dashboard overview`
 
-- [ ] **5. Scar list, scar detail and Caught-a-repeat feed**
+- [x] **5. Scar list, scar detail and Caught-a-repeat feed**
   Becomes usable: The remaining three dashboard pages with severity badges, before/after diff and states.
   Why now: Completes the dashboard surface set.
   PRD ref: `prd.md > Dashboard`
@@ -59,7 +59,7 @@ Build mode: fast (the learner asked to finish fast; hands-on checkpoints are lef
   Learner check: Click through all four pages.
   Commit: `Add scars, detail and repeats pages`
 
-- [ ] **6. One-command demo**
+- [x] **6. One-command demo**
   Becomes usable: `npm install && npm run demo` builds the seeded demo repo (3-4 scars, ~2 weeks of events) and starts the dashboard; `npm run demo:repeat` plays the repeat scenario.
   Why now: The demo is what judges and the video use; it ties all slices together.
   PRD ref: `prd.md > The Core Journey`

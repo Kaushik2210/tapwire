@@ -128,8 +128,16 @@ describe("regex matcher", () => {
 
 describe("semantic stand-in (mock mode)", () => {
   it("catches a reworded version of a past mistake", () => {
-    const added = [{ file: "a.js", line: 1, text: "  const user = loadUser(userId)" }];
-    expect(matchSimilar(scars, added).length).toBeGreaterThan(0);
+    const added = [{ file: "a.js", line: 1, text: "  res.redirect( req.query.next ) ;" }];
+    expect(matchSimilar(scars, added).map((h) => h.scarId)).toContain("scar-001");
+  });
+
+  it("does not flag the corrected code", () => {
+    const added = [
+      { file: "a.js", line: 1, text: "const user = await loadUser(id)" },
+      { file: "a.js", line: 2, text: "db.query(\"SELECT * FROM users WHERE id = ?\", [id])" },
+    ];
+    expect(matchSimilar(scars, added)).toEqual([]);
   });
 
   it("stays quiet on unrelated code", () => {

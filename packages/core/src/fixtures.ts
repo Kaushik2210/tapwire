@@ -37,4 +37,12 @@ export const MOCK_SCARS: ScarDraft[] = [
     goodPattern: "const user = await loadUser(id)",
     severity: "medium",
   },
+  {
+    title: "Stack trace leaked to the client",
+    whatWentWrong: "An error handler sent the raw stack trace in the HTTP response, exposing file paths and internals.",
+    badPattern: "res.status(500).send(err.stack)",
+    badRegex: String.raw`res\.(status\(\d+\)\.)?(send|json)\(\s*err(or)?\.stack`,
+    goodPattern: "Log the error on the server and send a generic message: res.status(500).send('Something went wrong')",
+    severity: "low",
+  },
 ];
