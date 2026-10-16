@@ -69,7 +69,7 @@ Build mode: fast (the learner asked to finish fast; hands-on checkpoints are lef
   Learner check: Run the demo and the repeat scenario and watch the gauge move.
   Commit: `Add seeded demo and repeat scenario`
 
-- [ ] **7. README, license and env example**
+- [x] **7. README, license and env example**
   Becomes usable: A newcomer can understand and run the project from the README.
   Why now: Required for submission; written last so it reflects what exists.
   PRD ref: `prd.md > What We're Building`

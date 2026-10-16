@@ -12,7 +12,14 @@ import {
   ScarError,
 } from "@scar/core";
 
-const paint = (code: string) => (s: string) => (process.stdout.isTTY ? `\x1b[${code}m${s}\x1b[0m` : s);
+// Pick up ANTHROPIC_API_KEY etc. from a local .env if there is one (never committed).
+try {
+  process.loadEnvFile(".env");
+} catch {
+  /* no .env file: fine */
+}
+
+const paint =(code: string) => (s: string) => (process.stdout.isTTY ? `\x1b[${code}m${s}\x1b[0m` : s);
 const c = { red: paint("31"), green: paint("32"), dim: paint("2"), bold: paint("1") };
 
 function fail(err: unknown): never {
