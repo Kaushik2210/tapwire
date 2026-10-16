@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { computeAmnesiaRate, trendByDay } from "@scar/core";
 import { formatDateTime, loadRepo } from "../lib/data";
-import { EmptyState, ErrorPanel, Meter, PageHead, SEVERITIES, SeverityBadge, TrendChart, status } from "../components/ui";
+import { CountUp } from "../components/CountUp";
+import { TrendChart } from "../components/TrendChart";
+import { EmptyState, ErrorPanel, Meter, PageHead, SEVERITIES, SeverityBadge, status } from "../components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +46,7 @@ export default function Overview() {
         <div>
           <p className="eyebrow">Amnesia rate</p>
           <p className="score" aria-label={summary.rate === null ? "no data" : `${pctWhole} percent`}>
-            <span className="score-n">{pctWhole}</span>
+            <span className="score-n">{summary.rate === null ? "—" : <CountUp value={Math.round(summary.rate * 100)} />}</span>
             {summary.rate !== null && <span className="score-u">%</span>}
           </p>
           <p className="verdict">
@@ -58,9 +60,9 @@ export default function Overview() {
 
         <div>
           <dl className="facts">
-            <div className="fact"><dt>Scars tracked</dt><dd>{scars.length}</dd></div>
-            <div className="fact"><dt>New mistakes captured</dt><dd>{summary.newMistakes}</dd></div>
-            <div className="fact"><dt>Repeats caught</dt><dd>{summary.repeats}</dd></div>
+            <div className="fact"><dt>Scars tracked</dt><dd><CountUp value={scars.length} /></dd></div>
+            <div className="fact"><dt>New mistakes captured</dt><dd><CountUp value={summary.newMistakes} /></dd></div>
+            <div className="fact"><dt>Repeats caught</dt><dd><CountUp value={summary.repeats} /></dd></div>
             <div className="fact"><dt>Watching for</dt><dd>{days}<small>days</small></dd></div>
           </dl>
           <p className="why">
@@ -78,7 +80,7 @@ export default function Overview() {
             <span><i className="l-repeat" />Repeat caught</span>
           </p>
         </div>
-        <TrendChart points={trend} events={events} />
+        <TrendChart points={trend} events={events} titles={Object.fromEntries(scars.map((x) => [x.id, x.title]))} />
       </section>
 
       <div className="two-col rise" style={{ ["--d" as string]: "240ms" }}>
