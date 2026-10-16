@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# build output
+.next/
+dist/
+
+# local env (keep the example)
+.env
+.env.*
+!.env.example
+
+# generated demo repo
+/demo-repo/
+
+# private learner context
+/devpost/learner-profile.md
