@@ -15,7 +15,7 @@ export default function Repeats() {
     <>
       <PageHead
         title="Caught repeats"
-        lede="Times the agent tried to reintroduce a fixed mistake and Scar Tissue flagged it."
+        lede="Times the agent tried to reintroduce a fixed mistake and TapWire flagged it."
         repo={repo}
       />
       {repeats.length === 0 ? (

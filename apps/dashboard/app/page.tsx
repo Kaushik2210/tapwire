@@ -27,7 +27,7 @@ export default function Overview() {
 
       {events.length === 0 ? (
         <EmptyState title="No scars yet" command={`scar capture <commit-sha>`}>
-          Fix a bug, then capture the fixing commit. Scar Tissue turns it into a rule and starts measuring repeats.
+          Fix a bug, then capture the fixing commit. TapWire turns it into a rule and starts measuring repeats.
         </EmptyState>
       ) : (
         <div className="grid">

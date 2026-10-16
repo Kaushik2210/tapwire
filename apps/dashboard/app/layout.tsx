@@ -4,7 +4,7 @@ import { Nav } from "../components/Nav";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Scar Tissue",
+  title: "TapWire",
   description: "Turn every AI-agent mistake into an enforced rule, and measure how often it repeats.",
 };
 

@@ -3,8 +3,8 @@ import { join } from "node:path";
 import { readScars } from "./store";
 import type { Scar } from "./types";
 
-export const START = "<!-- scar-tissue:start -->";
-export const END = "<!-- scar-tissue:end -->";
+export const START = "<!-- tapwire:start -->";
+export const END = "<!-- tapwire:end -->";
 export const TARGET_FILES = ["AGENTS.md", "CLAUDE.md"];
 
 export function renderSection(scars: Scar[]): string {

@@ -1,6 +1,6 @@
 /**
  * Demo step 2: a scripted "agent" reintroduces a mistake that was already fixed.
- * Scar Tissue catches it, and the Scars section is refreshed for the agent.
+ * TapWire catches it, and the Scars section is refreshed for the agent.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
