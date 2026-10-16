@@ -131,7 +131,7 @@ app.listen(config.port);
 
 if (existsSync(DEMO)) {
   if (!DEMO.startsWith(ROOT) || !DEMO.endsWith("demo-repo")) throw new Error(`Refusing to delete ${DEMO}`);
-  rmSync(DEMO, { recursive: true, force: true });
+  rmSync(DEMO, { recursive: true, force: true, maxRetries: 8, retryDelay: 250 });
 }
 mkdirSync(DEMO, { recursive: true });
 git(["init", "-q", "-b", "main"]);
