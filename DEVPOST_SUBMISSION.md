@@ -1,4 +1,4 @@
-# Scar Tissue: Devpost submission prep
+# TapWire: Devpost submission prep
 
 This file is working material for the submission. It holds facts, prompts, the shot list and the checklist. The project name, short description and exit-survey answers on Devpost are written by you in your own words (the 6-ship step of the skill pack requires submission copy to be human-written).
 
@@ -36,7 +36,7 @@ Record the terminal and the dashboard in a clean window with no other apps, tabs
 | 0:15 to 0:35 | **The baseline** | Dashboard Overview: Amnesia Rate gauge at 29%, trend chart, headline stat (2 repeats across 5 scars). |
 | 0:35 to 1:05 | **Capture a scar** | `npm run demo:capture`. Then the Scars page: the new "Pagination skipped the first page of results" scar. Back on Overview the gauge has dropped to 25%. |
 | 1:05 to 1:30 | **The agent repeats the mistake** | `npm run demo:repeat`: the scripted agent edits `src/routes/auth.js` and reintroduces `res.redirect(req.query.next)`. |
-| 1:30 to 1:55 | **Scar Tissue blocks it** | The `scar check` output: scar name, `src/routes/auth.js:9`, reason, the correct pattern, non-zero exit. |
+| 1:30 to 1:55 | **TapWire blocks it** | The `scar check` output: scar name, `src/routes/auth.js:9`, reason, the correct pattern, non-zero exit. |
 | 1:55 to 2:10 | **Feed it back** | `scar export` output, then open the "Scars" section in `AGENTS.md`. |
 | 2:10 to 2:30 | **Result and impact** | Dashboard: "Caught repeats" feed with the new entry, gauge at 33%, scar detail with before/after. End on the Overview. |
 
