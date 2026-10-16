@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { dayLabel, formatDateTime, loadRepo } from "../../lib/data";
 import { EmptyState, ErrorPanel, PageHead, SeverityBadge } from "../../components/ui";
 
+export const metadata: Metadata = { title: "Caught repeats" };
 export const dynamic = "force-dynamic";
 
 export default function Repeats() {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import type { ScarEvent, Severity, TrendPoint } from "@scar/core";
+import type { Severity } from "@scar/core";
+import { CopyButton } from "./CopyButton";
 import { pct } from "../lib/data";
 
 export const SEVERITIES: Severity[] = ["critical", "high", "medium", "low"];
@@ -25,7 +26,12 @@ export function EmptyState({ title, children, command }: { title: string; childr
     <div className="notice">
       <h2>{title}</h2>
       <p>{children}</p>
-      {command ? <pre>{command}</pre> : null}
+      {command ? (
+        <div className="cmd">
+          <pre>{command}</pre>
+          <CopyButton text={command} />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -79,84 +85,6 @@ export function Meter({ rate }: { rate: number | null }) {
         <span>100%</span>
       </div>
     </div>
-  );
-}
-
-const shortDate = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
-
-/** Rate over time (line) with every event on a lane beneath it: hollow = new mistake, filled = repeat caught. */
-export function TrendChart({ points, events }: { points: TrendPoint[]; events: ScarEvent[] }) {
-  const W = 720, H = 300, L = 44, R = 20, T = 28;
-  const iw = W - L - R;
-  const plotBottom = 188, laneY = 232, axisY = 284;
-  const times = events.map((e) => Date.parse(e.at));
-  const HALF_DAY = 12 * 3_600_000;
-  const t0 = Math.min(...times) - HALF_DAY;
-  const t1 = Math.max(...times) + HALF_DAY;
-  const x = (t: number) => L + ((t - t0) / (t1 - t0)) * iw;
-  const y = (r: number) => T + (1 - r) * (plotBottom - T);
-
-  const pts = points
-    .filter((p) => p.rate !== null)
-    .map((p) => ({ p, x: x(Math.min(Math.max(Date.parse(`${p.date}T12:00:00Z`), t0), t1)), y: y(p.rate!) }));
-  const line = pts.map((q, i) => `${i ? "L" : "M"}${q.x.toFixed(1)} ${q.y.toFixed(1)}`).join(" ");
-  const area = pts.length ? `${line} L${pts[pts.length - 1].x.toFixed(1)} ${plotBottom} L${pts[0].x.toFixed(1)} ${plotBottom} Z` : "";
-  const peak = pts.reduce((m, q) => (m === null || q.p.rate! > m.p.rate! ? q : m), null as (typeof pts)[number] | null);
-  const last = pts[pts.length - 1];
-  const first = points[0];
-  const lastPoint = points[points.length - 1];
-  const summary = `Amnesia Rate over time, from ${pct(first.rate)} on ${first.date} to ${pct(lastPoint.rate)} on ${lastPoint.date}. ${events.filter((e) => e.type === "repeat").length} repeats caught and ${events.filter((e) => e.type === "new_mistake").length} new mistakes captured.`;
-  const ticks = [0, 1 / 3, 2 / 3, 1].map((f) => t0 + f * (t1 - t0));
-
-  return (
-    <svg className="chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={summary}>
-      <defs>
-        <linearGradient id="area-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {[0, 0.25, 0.5, 0.75, 1].map((t) => (
-        <g key={t}>
-          <line className="tick" x1={L} x2={W - R} y1={y(t)} y2={y(t)} strokeDasharray={t === 0 ? undefined : "2 5"} />
-          <text x={L - 10} y={y(t) + 4} textAnchor="end">{Math.round(t * 100)}%</text>
-        </g>
-      ))}
-      {area && <path d={area} fill="url(#area-fill)" />}
-      {line && <path className="line" d={line} />}
-      {pts.map((q) => (
-        <circle key={q.p.date} className="dot" cx={q.x} cy={q.y} r={4}>
-          <title>{`${q.p.date}: ${pct(q.p.rate)} (${q.p.repeats} repeats, ${q.p.newMistakes} new)`}</title>
-        </circle>
-      ))}
-      {peak && peak !== last && (
-        <text className="peak" x={peak.x} y={peak.y - 12} textAnchor="middle">{pct(peak.p.rate)}</text>
-      )}
-      {last && <text className="peak" x={last.x} y={last.y - 12} textAnchor="end">{pct(last.p.rate)} now</text>}
-
-      <text x={L - 10} y={laneY + 4} textAnchor="end" style={{ fontSize: 10 }}>events</text>
-      <rect className="lane" x={L} y={laneY - 14} width={iw} height={28} rx={14} />
-      {events.map((e) => {
-        const cx = x(Date.parse(e.at));
-        return e.type === "repeat" ? (
-          <g key={e.id}>
-            <circle className="ev-repeat-ring" cx={cx} cy={laneY} r={9} />
-            <circle className="ev-repeat" cx={cx} cy={laneY} r={5}>
-              <title>{`Repeat caught, ${e.file ?? ""}:${e.line ?? ""}`}</title>
-            </circle>
-          </g>
-        ) : (
-          <circle key={e.id} className="ev-new" cx={cx} cy={laneY} r={5}>
-            <title>{`New mistake captured (${e.scarId})`}</title>
-          </circle>
-        );
-      })}
-      {ticks.map((t, i) => (
-        <text key={i} x={x(t)} y={axisY} textAnchor={i === 0 ? "start" : i === ticks.length - 1 ? "end" : "middle"}>
-          {shortDate.format(new Date(t))}
-        </text>
-      ))}
-    </svg>
   );
 }
 
