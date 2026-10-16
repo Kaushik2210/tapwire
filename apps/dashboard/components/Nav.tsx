@@ -10,6 +10,7 @@ const links = [
   { href: "/", label: "Overview" },
   { href: "/scars", label: "Scars" },
   { href: "/repeats", label: "Caught repeats" },
+  { href: "/try", label: "Try it" },
 ];
 
 export function Nav({ repo, items }: { repo: string; items: PaletteItem[] }) {
