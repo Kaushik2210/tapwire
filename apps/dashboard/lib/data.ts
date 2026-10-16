@@ -36,4 +36,14 @@ const timeFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric
 
 export const formatDate = (iso: string) => dateFmt.format(new Date(iso));
 export const formatDateTime = (iso: string) => timeFmt.format(new Date(iso));
-export const pct = (rate: number | null) => (rate === null ? "—" : `${Math.round(rate * 100)}%`);
+/** "Today", "Yesterday" or "Oct 3": used to group the incident log. */
+export function dayLabel(iso: string, now = new Date()) {
+  const d = new Date(iso);
+  const start = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((start(now) - start(d)) / 86_400_000);
+  if (diff === 0) return "Today";
+  if (diff === 1) return "Yesterday";
+  return dateFmt.format(d);
+}
+
+export const pct =(rate: number | null) => (rate === null ? "—" : `${Math.round(rate * 100)}%`);

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Nav } from "../components/Nav";
+import { repoPath } from "../lib/data";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,12 +15,15 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const repoName = repoPath().split(/[\\/]/).filter(Boolean).pop() ?? "repo";
   return (
     <html lang="en">
       <body>
-        <a href="#main" className="sr-only">Skip to content</a>
-        <Nav />
+        <a href="#main" className="sr-only skip">Skip to content</a>
+        <Nav repo={repoName} />
         <main id="main" className="page">{children}</main>
       </body>
     </html>

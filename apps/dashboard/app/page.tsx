@@ -1,83 +1,128 @@
 import Link from "next/link";
 import { computeAmnesiaRate, trendByDay } from "@scar/core";
-import { formatDateTime, loadRepo, pct } from "../lib/data";
-import { EmptyState, ErrorPanel, Gauge, PageHead, TrendChart } from "../components/ui";
+import { formatDateTime, loadRepo } from "../lib/data";
+import { EmptyState, ErrorPanel, Meter, PageHead, SEVERITIES, SeverityBadge, TrendChart, status } from "../components/ui";
 
 export const dynamic = "force-dynamic";
 
 export default function Overview() {
-  const { repo, scars, events, error } = loadRepo();
+  const { scars, events, error } = loadRepo();
   if (error) return (<><PageHead title="Overview" /><ErrorPanel message={error} /></>);
+
+  if (events.length === 0) {
+    return (
+      <>
+        <PageHead eyebrow="Overview" title="Is your agent repeating itself?" />
+        <EmptyState title="No scars yet" command="scar capture <commit-sha>">
+          Fix a bug, then capture the fixing commit. TapWire turns it into a rule and starts measuring repeats.
+        </EmptyState>
+      </>
+    );
+  }
 
   const summary = computeAmnesiaRate(events);
   const trend = trendByDay(events);
-  const titles = new Map(scars.map((s) => [s.id, s.title]));
-  const recent = events.filter((e) => e.type === "repeat").sort((a, b) => b.at.localeCompare(a.at)).slice(0, 3);
-
-  const peak = trend.reduce((m, p) => (p.rate !== null && (m === null || p.rate > (m.rate ?? 0)) ? p : m), null as (typeof trend)[number] | null);
-  const fellFromPeak = peak && summary.rate !== null && peak.rate !== null && summary.rate < peak.rate;
+  const s = status(summary.rate);
+  const total = summary.repeats + summary.newMistakes;
+  const titles = new Map(scars.map((x) => [x.id, x]));
+  const recent = events.filter((e) => e.type === "repeat").sort((a, b) => b.at.localeCompare(a.at)).slice(0, 4);
+  const first = Math.min(...events.map((e) => Date.parse(e.at)));
+  const days = Math.max(1, Math.ceil((Date.now() - first) / 86_400_000));
+  const bySeverity = SEVERITIES.map((sev) => ({ sev, n: scars.filter((x) => x.severity === sev).length }));
+  const maxSev = Math.max(1, ...bySeverity.map((b) => b.n));
+  const pctWhole = summary.rate === null ? "—" : String(Math.round(summary.rate * 100));
 
   return (
     <>
       <PageHead
+        eyebrow={<>Overview · <b>last {days} days</b></>}
         title="Is your agent repeating itself?"
-        lede="The Amnesia Rate shows how often a mistake you already fixed comes back."
-        repo={repo}
+        lede="The Amnesia Rate is the share of recorded mistakes that were ones you had already fixed."
       />
 
-      {events.length === 0 ? (
-        <EmptyState title="No scars yet" command={`scar capture <commit-sha>`}>
-          Fix a bug, then capture the fixing commit. TapWire turns it into a rule and starts measuring repeats.
-        </EmptyState>
-      ) : (
-        <div className="grid">
-          <section className="card col-5" aria-labelledby="g">
-            <h2 id="g">Amnesia Rate</h2>
-            <Gauge rate={summary.rate} />
-          </section>
+      <section className={`panel hero rise ${s.tone}`} style={{ ["--d" as string]: "80ms" }} aria-label="Amnesia Rate">
+        <div>
+          <p className="eyebrow">Amnesia rate</p>
+          <p className="score" aria-label={summary.rate === null ? "no data" : `${pctWhole} percent`}>
+            <span className="score-n">{pctWhole}</span>
+            {summary.rate !== null && <span className="score-u">%</span>}
+          </p>
+          <p className="verdict">
+            {total > 0 ? `${summary.repeats} of ${total} recorded mistakes were repeats. ` : ""}
+            {s.verdict}
+          </p>
+          <p className="verdict-sub" style={{ marginBottom: "1rem" }}>{s.sub}</p>
+          <span className="chip">{s.label}</span>
+          <Meter rate={summary.rate} />
+        </div>
 
-          <section className="card col-7" aria-labelledby="h">
-            <h2 id="h">Headline</h2>
-            <p className="big-number">{summary.repeats}</p>
-            <p className="big-label">
-              {summary.repeats === 1 ? "repeat" : "repeats"} caught across {scars.length} {scars.length === 1 ? "scar" : "scars"}
-              {fellFromPeak ? ` · down from a peak of ${pct(peak!.rate)} on ${peak!.date.slice(5)}` : ""}
-            </p>
-            <div className="stats">
-              <div><div className="stat-n">{summary.newMistakes}</div><div className="stat-l">new mistakes</div></div>
-              <div><div className="stat-n">{summary.repeats}</div><div className="stat-l">repeats</div></div>
-              <div><div className="stat-n">{pct(summary.rate)}</div><div className="stat-l">amnesia rate</div></div>
-            </div>
-          </section>
+        <div>
+          <dl className="facts">
+            <div className="fact"><dt>Scars tracked</dt><dd>{scars.length}</dd></div>
+            <div className="fact"><dt>New mistakes captured</dt><dd>{summary.newMistakes}</dd></div>
+            <div className="fact"><dt>Repeats caught</dt><dd>{summary.repeats}</dd></div>
+            <div className="fact"><dt>Watching for</dt><dd>{days}<small>days</small></dd></div>
+          </dl>
+          <p className="why">
+            A caught repeat still counts: it shows the agent tried an old mistake. The rate falls as you capture new scars
+            and the agent stops repeating.
+          </p>
+        </div>
+      </section>
 
-          <section className="card col-12" aria-labelledby="t">
-            <h2 id="t">Amnesia Rate over time</h2>
-            <TrendChart points={trend} />
-          </section>
+      <section className="panel panel-pad rise" style={{ marginTop: "1.5rem", ["--d" as string]: "160ms" }} aria-labelledby="trend">
+        <div className="panel-title">
+          <h2 id="trend">Rate over time</h2>
+          <p className="legend">
+            <span><i className="l-new" />New mistake captured</span>
+            <span><i className="l-repeat" />Repeat caught</span>
+          </p>
+        </div>
+        <TrendChart points={trend} events={events} />
+      </section>
 
-          <section className="card col-12" aria-labelledby="r">
-            <h2 id="r">Latest caught repeats</h2>
-            {recent.length === 0 ? (
-              <p className="lede">Nothing caught yet. Run <code>scar check</code> before you commit.</p>
-            ) : (
-              <ul className="list">
-                {recent.map((e) => (
+      <div className="two-col rise" style={{ ["--d" as string]: "240ms" }}>
+        <section className="panel panel-pad" aria-labelledby="latest">
+          <div className="panel-title">
+            <h2 id="latest">Latest caught repeats</h2>
+            <Link href="/repeats">View all →</Link>
+          </div>
+          {recent.length === 0 ? (
+            <p className="lede" style={{ marginTop: 0 }}>Nothing caught yet. Run <code>scar check</code> before you commit.</p>
+          ) : (
+            <ol className="ledger">
+              {recent.map((e) => {
+                const sc = titles.get(e.scarId);
+                return (
                   <li key={e.id}>
-                    <Link className="row" href={`/scars/${e.scarId}`}>
-                      <div className="row-top">
-                        <span className="row-title">{titles.get(e.scarId) ?? e.scarId}</span>
-                        <span className="row-meta">{formatDateTime(e.at)}</span>
+                    <Link href={`/scars/${e.scarId}`} className={`entry sev-${sc?.severity ?? "low"}`}>
+                      <div>
+                        <p className="entry-id">{e.scarId} · {formatDateTime(e.at)}</p>
+                        <p className="entry-title">{sc?.title ?? e.scarId}</p>
+                        <p className="entry-desc mono">{e.file}:{e.line}</p>
                       </div>
-                      <p className="row-meta mono">{e.file}:{e.line}</p>
+                      <div className="entry-side"><span className="blocked">Blocked</span></div>
                     </Link>
                   </li>
-                ))}
-              </ul>
-            )}
-            <p style={{ marginTop: "1rem" }}><Link href="/repeats">See the full feed →</Link></p>
-          </section>
-        </div>
-      )}
+                );
+              })}
+            </ol>
+          )}
+        </section>
+
+        <section className="panel panel-pad" aria-labelledby="sev">
+          <div className="panel-title"><h2 id="sev">Scars by severity</h2></div>
+          <div className="bars">
+            {bySeverity.map(({ sev, n }) => (
+              <div key={sev} className={`bar-row sev-${sev}`}>
+                <SeverityBadge severity={sev} />
+                <div className="bar-track"><div className="bar-fill" style={{ width: `${(n / maxSev) * 100}%` }} /></div>
+                <span className="bar-n">{n}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </>
   );
 }

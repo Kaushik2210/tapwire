@@ -1,49 +1,60 @@
 import Link from "next/link";
-import { formatDateTime, loadRepo } from "../../lib/data";
+import { dayLabel, formatDateTime, loadRepo } from "../../lib/data";
 import { EmptyState, ErrorPanel, PageHead, SeverityBadge } from "../../components/ui";
 
 export const dynamic = "force-dynamic";
 
 export default function Repeats() {
-  const { repo, scars, events, error } = loadRepo();
+  const { scars, events, error } = loadRepo();
   if (error) return (<><PageHead title="Caught repeats" /><ErrorPanel message={error} /></>);
 
   const byId = new Map(scars.map((s) => [s.id, s]));
   const repeats = events.filter((e) => e.type === "repeat").sort((a, b) => b.at.localeCompare(a.at));
 
+  const groups: { day: string; items: typeof repeats }[] = [];
+  for (const e of repeats) {
+    const day = dayLabel(e.at);
+    const g = groups[groups.length - 1];
+    if (g && g.day === day) g.items.push(e);
+    else groups.push({ day, items: [e] });
+  }
+
   return (
     <>
       <PageHead
-        title="Caught repeats"
-        lede="Times the agent tried to reintroduce a fixed mistake and TapWire flagged it."
-        repo={repo}
+        eyebrow={<>Incident log · <b>{repeats.length} blocked</b></>}
+        title="Times the agent tried again."
+        lede="Each entry is a fixed mistake the agent tried to reintroduce, and the line where TapWire caught it."
       />
       {repeats.length === 0 ? (
         <EmptyState title="Nothing caught yet" command="scar check">
           When code reintroduces a past scar, it shows up here. Run the check before you commit.
         </EmptyState>
       ) : (
-        <ul className="list">
-          {repeats.map((e) => {
-            const s = byId.get(e.scarId);
-            return (
-              <li key={e.id} className="row feed-item">
-                <span className="feed-icon" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><circle cx="12" cy="12" r="9" /><path d="M5.6 5.6l12.8 12.8" /></svg>
-                </span>
-                <div className="feed-body">
-                  <div className="row-top">
-                    <Link className="row-title" href={`/scars/${e.scarId}`} style={{ textDecoration: "none" }}>{s?.title ?? e.scarId}</Link>
-                    {s && <SeverityBadge severity={s.severity} />}
-                  </div>
-                  <p className="row-meta mono">{e.file}:{e.line}</p>
-                  {e.reason && <p className="row-meta">{e.reason}</p>}
-                  <p className="row-meta">{formatDateTime(e.at)}</p>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        groups.map((g) => (
+          <section key={g.day} aria-label={g.day} className="group">
+            <h2 className="day">{g.day}</h2>
+            <div className="log">
+              {g.items.map((e) => {
+                const s = byId.get(e.scarId);
+                return (
+                  <article key={e.id} className="incident rise">
+                    <div className="incident-top">
+                      <h3><Link href={`/scars/${e.scarId}`}>{s?.title ?? e.scarId}</Link></h3>
+                      <span style={{ display: "inline-flex", gap: "0.625rem", alignItems: "center" }}>
+                        {s && <SeverityBadge severity={s.severity} />}
+                        <span className="blocked">Blocked</span>
+                      </span>
+                    </div>
+                    <span className="where">{e.file}:{e.line}</span>
+                    {e.reason && <p>{e.reason}</p>}
+                    <p className="when">{formatDateTime(e.at)}</p>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ))
       )}
     </>
   );
