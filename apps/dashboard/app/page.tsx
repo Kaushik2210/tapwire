@@ -125,6 +125,19 @@ export default function Overview() {
           </div>
         </section>
       </div>
+
+      <section className="panel panel-pad rise" style={{ marginTop: "1.5rem", ["--d" as string]: "320ms" }} aria-labelledby="how">
+        <div className="panel-title">
+          <h2 id="how">How TapWire works</h2>
+          <Link href="/try">Try it in the browser →</Link>
+        </div>
+        <ol className="steps">
+          <li><span className="step-n">1</span><h3>Capture</h3><p>Turn a fixing commit into a scar: what went wrong and the correct pattern.</p><code>scar capture &lt;sha&gt;</code></li>
+          <li><span className="step-n">2</span><h3>Guard</h3><p>Block it when the agent writes it again, before the commit lands.</p><code>scar hook install</code></li>
+          <li><span className="step-n">3</span><h3>Feed back</h3><p>Write the scars into the agent’s instruction files so it reads them first.</p><code>scar export</code></li>
+          <li><span className="step-n">4</span><h3>Measure</h3><p>Watch the Amnesia Rate fall as fewer fixed mistakes come back.</p><code>this dashboard</code></li>
+        </ol>
+      </section>
     </>
   );
 }
