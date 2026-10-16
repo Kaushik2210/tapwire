@@ -3,7 +3,7 @@ doc: prd
 status: approved
 ---
 
-# Scar Tissue — Product Requirements
+# TapWire — Product Requirements
 
 A CLI plus web dashboard that turns an AI coding agent's fixed mistakes into enforced rules and measures how often the agent repeats them, for beginners and solo builders coding with AI agents.
 Source: `scope.md > The Core Loop`, `scope.md > The Unique Kernel`, `scope.md > What "Working" Looks Like`.
@@ -85,7 +85,7 @@ Scar editing and retirement in the dashboard; severity-weighted rate; auto-captu
 ## Non-Goals
 - Accounts, auth, hosting or deployment — not needed to demonstrate the loop.
 - Supporting many languages — the demo app sets the matcher scope.
-- Replacing code review or linters — Scar Tissue only remembers and enforces past mistakes.
+- Replacing code review or linters — TapWire only remembers and enforces past mistakes.
 
 ## Open Questions
 - Visual specifics (fonts, palette): assumption, decided in `4-spec` within the direction above. Can wait.

@@ -3,12 +3,12 @@ doc: scope
 status: approved
 ---
 
-# Scar Tissue
+# TapWire
 
 Turns every mistake an AI coding agent makes into a permanent, enforced rule, and measures how often the agent repeats fixed mistakes.
 
 ## The Unique Kernel
-Passive notes (AGENTS.md, rules files) store past mistakes but never enforce or measure them. Scar Tissue closes the loop: a fixed bug becomes a "scar" that is checked against every future diff, and the result is a number, the Amnesia Rate, showing how often the agent repeats fixed mistakes.
+Passive notes (AGENTS.md, rules files) store past mistakes but never enforce or measure them. TapWire closes the loop: a fixed bug becomes a "scar" that is checked against every future diff, and the result is a number, the Amnesia Rate, showing how often the agent repeats fixed mistakes.
 
 ## Who It's For
 A beginner or solo builder who codes with an AI agent (Codex, Cursor and similar). They fix a bug, then watch the agent reintroduce the same bug a few days later, and today their only defence is a notes file the agent may ignore.

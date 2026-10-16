@@ -19,7 +19,7 @@ Build mode: fast (the learner asked to finish fast; hands-on checkpoints are lef
   Learner check: Run the capture command in a scratch repo and read the scar it wrote.
   Commit: `Add scar capture and core store`
 
-- [x] **2. Scar Tissue catches a repeat of a past mistake**
+- [x] **2. TapWire catches a repeat of a past mistake**
   Becomes usable: `scar check` flags reintroduced mistakes by file and line, logs repeat events and exits non-zero.
   Why now: This is the unique kernel (enforcement), so it comes straight after capture.
   PRD ref: `prd.md > Guard`

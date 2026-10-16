@@ -3,10 +3,10 @@ doc: spec
 status: approved
 ---
 
-# Scar Tissue — Technical Spec
+# TapWire — Technical Spec
 
 ## How This Works, In Plain Language
-Scar Tissue is two programs that share a folder of plain files. The first is a command-line tool called `scar`. Run inside any git repo, it reads a fixing commit and writes down the mistake as a "scar" in `.scars/scars.json`. Later it reads your pending changes and checks them against those saved scars. The second program is a web dashboard. It never talks to the command-line tool; it just reads the same `.scars/` folder (`scars.json` and `events.json`) and draws the Amnesia Rate, the scar list, scar details and the feed of caught repeats. A "scar" is a saved description of a mistake; an "event" is one line saying "a new mistake was recorded" or "a repeat was caught". The Amnesia Rate is repeats divided by repeats plus new mistakes.
+TapWire is two programs that share a folder of plain files. The first is a command-line tool called `scar`. Run inside any git repo, it reads a fixing commit and writes down the mistake as a "scar" in `.scars/scars.json`. Later it reads your pending changes and checks them against those saved scars. The second program is a web dashboard. It never talks to the command-line tool; it just reads the same `.scars/` folder (`scars.json` and `events.json`) and draws the Amnesia Rate, the scar list, scar details and the feed of caught repeats. A "scar" is a saved description of a mistake; an "event" is one line saying "a new mistake was recorded" or "a repeat was caught". The Amnesia Rate is repeats divided by repeats plus new mistakes.
 Why this shape: files in the repo mean no database, no accounts and no server for the CLI, and the dashboard stays a simple reader. A language model (Anthropic API) writes the scar text and does the fuzzy "is this the same mistake?" check; a mock mode swaps it for saved answers so everything runs without a key.
 
 ## The Core Journey Through the System
@@ -60,7 +60,7 @@ Both live in the target repo, are appended by the CLI and read by the dashboard,
 
 ## File Structure
 ```
-scar-tissue/
+tapwire/
 ├── packages/
 │   ├── core/            # types, store, matcher, rate, LLM client + fixtures
 │   └── cli/             # `scar` commands
