@@ -1,4 +1,4 @@
-# Scar Tissue
+# TapWire
 
 **Turns every mistake an AI coding agent makes into a permanent, enforced rule, and measures how often the agent repeats fixed mistakes.**
 
@@ -6,7 +6,7 @@
 
 AI coding agents repeat bugs you already fixed and forget decisions you already made. The usual fix is a note in `AGENTS.md` or a rules file, but a note is passive: it stores a lesson, it doesn't enforce it, and it never tells you whether the agent actually learned anything.
 
-Scar Tissue closes that loop for beginners and solo builders who code with agents (Codex, Cursor and similar):
+TapWire closes that loop for beginners and solo builders who code with agents (Codex, Cursor and similar):
 
 1. **Capture**: `scar capture <commit-sha>` reads a fixing commit and turns it into a *scar*: what went wrong, the bad pattern (with an optional regex), the correct pattern and a severity.
 2. **Guard**: `scar check` reads your working or staged diff and flags code that reintroduces a scar, with the file, line and reason. Regex first (fast, offline), then an LLM pass for semantic matches. A hit exits non-zero, so it can block a commit.
@@ -102,7 +102,7 @@ npm run typecheck
 
 ## How it was built
 
-Scar Tissue was built with the Devpost Learn *Build With AI: Basics* skill pack, in order: `1-start` (learner profile), `2-scope`, `3-prd`, `4-spec`, `5-build` and `6-ship`. The documents those skills produced are in [`devpost/`](devpost/): [scope](devpost/scope.md), [PRD](devpost/prd.md), [spec](devpost/spec.md) and the [build checklist](devpost/checklist.md). The build followed the checklist's seven slices, each verified and committed in turn. The pack is licensed separately and is not vendored in this repository.
+TapWire was built with the Devpost Learn *Build With AI: Basics* skill pack, in order: `1-start` (learner profile), `2-scope`, `3-prd`, `4-spec`, `5-build` and `6-ship`. The documents those skills produced are in [`devpost/`](devpost/): [scope](devpost/scope.md), [PRD](devpost/prd.md), [spec](devpost/spec.md) and the [build checklist](devpost/checklist.md). The build followed the checklist's seven slices, each verified and committed in turn. The pack is licensed separately and is not vendored in this repository.
 
 The interview steps of those skills were answered from a written project brief rather than a live conversation.
 
