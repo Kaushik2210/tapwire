@@ -18,11 +18,31 @@ function hookPath(repo: string): string {
   }
 }
 
+/**
+ * `command` must exit 0 (clean), 1 (a repeat was found) or anything else (the tool itself failed).
+ * Only exit 1 blocks the commit: a broken or missing tool must never stop someone from committing.
+ */
 export function renderHook(command: string): string {
-  return `#!/bin/sh\n${HOOK_MARKER}\n# Blocks the commit if staged code reintroduces a past mistake. Remove with: scar hook uninstall\n${command} || {\n  echo "TapWire: commit blocked. Fix the repeat above, or bypass once with: git commit --no-verify" >&2\n  exit 1\n}\n`;
+  return `#!/bin/sh
+${HOOK_MARKER}
+# Blocks the commit if staged code reintroduces a past mistake. Remove with: scar hook uninstall
+# The check runs in a subshell so that nothing it does can end this script before the result is classified.
+(
+${command}
+)
+code=$?
+if [ "$code" -eq 1 ]; then
+  echo "TapWire: commit blocked. Fix the repeat above, or bypass once with: git commit --no-verify" >&2
+  exit 1
+fi
+if [ "$code" -ne 0 ]; then
+  echo "TapWire: the check could not run (exit $code), so the commit is allowed." >&2
+fi
+exit 0
+`;
 }
 
-/** Install a pre-commit hook that runs `scar check --staged`. Never overwrites a hook it did not write. */
+/** Install a pre-commit hook that runs `command`. Never overwrites a hook it did not write. */
 export function installHook(repo: string, command: string): string {
   const path = hookPath(repo);
   if (existsSync(path) && !readFileSync(path, "utf8").includes(HOOK_MARKER)) {
@@ -32,6 +52,15 @@ export function installHook(repo: string, command: string): string {
   writeFileSync(path, renderHook(command));
   chmodSync(path, 0o755);
   return path;
+}
+
+export function isHookInstalled(repo: string): boolean {
+  try {
+    const path = hookPath(repo);
+    return existsSync(path) && readFileSync(path, "utf8").includes(HOOK_MARKER);
+  } catch {
+    return false;
+  }
 }
 
 /** Remove the hook, but only if TapWire wrote it. Returns whether anything was removed. */

@@ -10,6 +10,8 @@ export interface CheckResult {
   hits: Hit[];
   notice?: string;
   scarCount: number;
+  /** Number of added lines that were examined. */
+  checked?: number;
 }
 
 const MAX_UNTRACKED_FILES = 50;
@@ -25,7 +27,22 @@ function untrackedDiff(repo: string): string {
     .join("\n");
 }
 
-function workingDiff(repo: string, staged: boolean): string {
+function workingDiff(repo: string, staged: boolean, base?: string): string {
+  if (base) {
+    // CI mode: everything this branch changed relative to the base (e.g. origin/main).
+    if (base.startsWith("-")) throw new ScarError(`Invalid base ref: ${base}`);
+    try {
+      return execFileSync("git", ["diff", "--unified=0", `${base}...HEAD`], {
+        cwd: repo,
+        encoding: "utf8",
+        maxBuffer: 20 * 1024 * 1024,
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+    } catch (err) {
+      const msg = ((err as { stderr?: string }).stderr ?? (err as Error).message).toString().trim();
+      throw new ScarError(`git diff ${base}...HEAD failed: ${msg}. Is "${base}" a valid ref, and is the history fetched (in CI use fetch-depth: 0)?`);
+    }
+  }
   const args = staged ? ["diff", "--cached", "--unified=0"] : ["diff", "HEAD", "--unified=0"];
   try {
     const tracked = execFileSync("git", args, {
@@ -79,20 +96,28 @@ export function checkDiff(scars: Scar[], diff: string) {
   return { added, regexHits: matchRegex(scars, added) };
 }
 
-export async function checkRepo(
-  repo: string,
-  opts: { staged?: boolean; record?: boolean } = {},
-): Promise<CheckResult> {
+export interface CheckOptions {
+  /** Check only staged changes (what a pre-commit hook sees). */
+  staged?: boolean;
+  /** Log repeat events (default true). */
+  record?: boolean;
+  /** Run the semantic pass after the regex pass (default true). False = fast, offline, free. */
+  semantic?: boolean;
+  /** Compare against a base ref instead of the working tree, for CI (e.g. "origin/main"). */
+  base?: string;
+}
+
+export async function checkRepo(repo: string, opts: CheckOptions = {}): Promise<CheckResult> {
   const scars = readScars(repo);
   if (scars.length === 0) {
     return { hits: [], scarCount: 0, notice: "No scars saved yet. Run `scar capture <commit-sha>` first." };
   }
 
-  const { added, regexHits } = checkDiff(scars, workingDiff(repo, !!opts.staged));
+  const { added, regexHits } = checkDiff(scars, workingDiff(repo, !!opts.staged, opts.base));
   let hits = [...regexHits];
   let notice: string | undefined;
 
-  if (added.length > 0) {
+  if (added.length > 0 && opts.semantic !== false) {
     try {
       hits.push(...(isMock() ? matchSimilar(scars, added) : await llmPass(scars, added)));
     } catch (err) {
@@ -113,5 +138,5 @@ export async function checkRepo(
       addEvent(repo, { type: "repeat", scarId: h.scarId, file: h.file, line: h.line, reason: h.reason });
     }
   }
-  return { hits, notice, scarCount: scars.length };
+  return { hits, notice, scarCount: scars.length, checked: added.length };
 }

@@ -32,6 +32,19 @@ export const readEvents = (repo: string) => readJson<ScarEvent>(scarsPath(repo, 
 export const writeScars = (repo: string, scars: Scar[]) => writeJson(scarsPath(repo, "scars.json"), scars);
 export const writeEvents = (repo: string, events: ScarEvent[]) => writeJson(scarsPath(repo, "events.json"), events);
 
+/** Create an empty `.scars/` store if there isn't one. Returns true if anything was created. */
+export function ensureStore(repo: string): boolean {
+  let created = false;
+  for (const file of ["scars.json", "events.json"] as const) {
+    const path = scarsPath(repo, file);
+    if (!existsSync(path)) {
+      writeJson(path, []);
+      created = true;
+    }
+  }
+  return created;
+}
+
 export function nextId(prefix: string, existing: { id: string }[]) {
   const max = existing.reduce((m, e) => {
     const n = Number(e.id.split("-").pop());

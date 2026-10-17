@@ -16,7 +16,7 @@ export function renderSection(scars: Scar[]): string {
         )
         .join("\n\n")
     : "_No scars recorded yet._";
-  return `${START}\n## Scars: mistakes already fixed here\nRead these before coding. \`scar check\` blocks them if they come back.\n\n${body}\n${END}`;
+  return `${START}\n## Scars: mistakes already fixed here\nThese are mistakes that were already fixed in this repository. Do not write them again.\nBefore you finish a task, run \`scar check\` and fix anything it reports. A pre-commit hook may also block the commit.\n\n${body}\n${END}`;
 }
 
 /** Replace the managed block if present, otherwise append it; everything else is untouched. */
