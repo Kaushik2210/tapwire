@@ -109,5 +109,7 @@ Activity mode: not yet done
 - Added a Try it page, live refresh, command palette, interactive chart, searchable scar list, copy buttons and a theme toggle to the dashboard — learner-requested polish; none changes the kernel or the core journey. `spec.md > Components` lists them.
 - Mock semantic matcher changed from token overlap to a whitespace- and quote-insensitive substring match — the build found the first version flagged corrected code (for example `await loadUser`) as a repeat; `packages/core/test/core.test.ts` now pins that case.
 - The Amnesia Rate explanation was added to the dashboard — a caught repeat raises the rate, which reads backwards without a note.
+- `scar check` now includes brand-new untracked files and ignores TapWire's own managed files (`.scars/`, `AGENTS.md`, `CLAUDE.md`) — writing live-mode tests showed that a repeat in a new file was missed by `git diff HEAD`, and that the scar store and the exported instruction files quote bad patterns on purpose, so they flagged themselves (and would have blocked the hook on committing an export). `packages/core/test/core.test.ts` and `live.test.ts` cover both.
+- Dashboard shows bundled sample data when no repository is configured, so it can be hosted without a demo repo — added for a requested public deployment; real repositories are unaffected.
 - Dashboard visual design redone (editorial type, segmented meter, event-lane chart) — the first version looked like generic default styling to the learner.
 

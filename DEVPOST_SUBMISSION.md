@@ -13,8 +13,8 @@ Everything below is checkable in this repository.
 - **Measure:** Amnesia Rate = repeats ÷ (repeats + new mistakes), shown as a gauge, a trend chart and a headline stat; plus a scar list, scar detail with before/after, and a "Caught repeats" feed. Empty, loading and error states exist.
 - **Who it's for:** beginners and solo builders who code with AI agents.
 - **Mock mode:** `SCAR_MOCK=1` runs the full demo with no API key.
-- **Verified:** 15 unit tests (matcher, diff parser, rate, trend, export, mock capture); capture, check and export run end to end against a generated demo repo; all four dashboard pages render, including not-found and missing-repo states.
-- **Not verified:** live mode against the real LLM API (no key was available while building).
+- **Verified:** 34 tests (matcher, diff parser, rate, trend, export, hook, mock capture, and 13 live-mode tests against a local stand-in for the Anthropic API); capture, check and export run end to end against a generated demo repo; every dashboard page renders (including not-found, missing-repo and bundled-sample-data states); all dashboard text colours meet WCAG AA in both themes (`npm run a11y:contrast`).
+- **Not verified:** how the real model behaves. The live code path is tested against a local stand-in for the API, but `npm run live:test` (about four real requests) has not been run with a real key. Run it once and note the result before submitting.
 - **Honest caveat worth knowing:** a blocked repeat is recorded as a repeat, so the rate goes *up* when the guard fires and *down* when a new scar is captured.
 
 ## 2. Questions to answer in your own words
