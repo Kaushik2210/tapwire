@@ -1,0 +1,65 @@
+[
+  {
+    "id": "evt-001",
+    "type": "new_mistake",
+    "scarId": "scar-001",
+    "at": "2026-10-03T09:15:00.000Z"
+  },
+  {
+    "id": "evt-002",
+    "type": "repeat",
+    "scarId": "scar-001",
+    "file": "src/routes/auth.js",
+    "line": 6,
+    "reason": "The agent rebuilt the login redirect from req.query again.",
+    "at": "2026-10-04T10:15:00.000Z"
+  },
+  {
+    "id": "evt-003",
+    "type": "new_mistake",
+    "scarId": "scar-002",
+    "at": "2026-10-05T11:15:00.000Z"
+  },
+  {
+    "id": "evt-004",
+    "type": "new_mistake",
+    "scarId": "scar-003",
+    "at": "2026-10-07T12:15:00.000Z"
+  },
+  {
+    "id": "evt-005",
+    "type": "repeat",
+    "scarId": "scar-002",
+    "file": "src/db/orders.js",
+    "line": 8,
+    "reason": "A new orders query was built by concatenating the id into the SQL string.",
+    "at": "2026-10-08T13:15:00.000Z"
+  },
+  {
+    "id": "evt-006",
+    "type": "new_mistake",
+    "scarId": "scar-004",
+    "at": "2026-10-10T09:15:00.000Z"
+  },
+  {
+    "id": "evt-007",
+    "type": "new_mistake",
+    "scarId": "scar-005",
+    "at": "2026-10-12T10:15:00.000Z"
+  },
+  {
+    "type": "new_mistake",
+    "scarId": "scar-006",
+    "id": "evt-008",
+    "at": "2026-10-17T08:31:22.861Z"
+  },
+  {
+    "type": "repeat",
+    "scarId": "scar-001",
+    "file": "src/routes/auth.js",
+    "line": 9,
+    "reason": "The route redirected to a URL taken straight from the request, so an attacker could send users to any site.",
+    "id": "evt-009",
+    "at": "2026-10-17T08:31:25.484Z"
+  }
+]

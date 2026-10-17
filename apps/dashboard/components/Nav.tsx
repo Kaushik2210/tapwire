@@ -13,7 +13,7 @@ const links = [
   { href: "/try", label: "Try it" },
 ];
 
-export function Nav({ repo, items }: { repo: string; items: PaletteItem[] }) {
+export function Nav({ repo, items, sample = false }: { repo: string; items: PaletteItem[]; sample?: boolean }) {
   const path = usePathname();
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
   const palette: PaletteItem[] = [
@@ -42,7 +42,7 @@ export function Nav({ repo, items }: { repo: string; items: PaletteItem[] }) {
         </nav>
         <div className="nav-tools">
           <CommandPalette items={palette} />
-          <LiveStatus repo={repo} />
+          <LiveStatus repo={repo} sample={sample} />
           <ThemeToggle />
         </div>
       </div>

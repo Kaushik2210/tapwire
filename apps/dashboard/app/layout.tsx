@@ -22,7 +22,7 @@ export const dynamic = "force-dynamic";
 const themeScript = `try{var t=localStorage.getItem('tapwire-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const { repo, scars } = loadRepo();
+  const { repo, scars, sample } = loadRepo();
   const repoName = repo.split(/[\\/]/).filter(Boolean).pop() ?? "repo";
   const items = [...scars]
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
@@ -34,10 +34,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <a href="#main" className="sr-only skip">Skip to content</a>
-        <Nav repo={repoName} items={items} />
+        <Nav repo={repoName} items={items} sample={!!sample} />
         <main id="main" className="page">{children}</main>
         <footer className="foot">
-          <span>TapWire reads the <code>.scars</code> folder of <code>{repoName}</code>.</span>
+          <span>
+            {sample ? (
+              <>Showing bundled <b>sample data</b>, not a real repository.</>
+            ) : (
+              <>TapWire reads the <code>.scars</code> folder of <code>{repoName}</code>.</>
+            )}
+          </span>
           <span>Press <kbd>/</kbd> or <kbd>Ctrl</kbd> <kbd>K</kbd> to search</span>
         </footer>
       </body>

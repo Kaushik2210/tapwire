@@ -1,0 +1,67 @@
+[
+  {
+    "title": "Unvalidated redirect",
+    "whatWentWrong": "The route redirected to a URL taken straight from the request, so an attacker could send users to any site.",
+    "badPattern": "res.redirect(req.query.next)",
+    "badRegex": "res\\.redirect\\(\\s*req\\.(query|body|params)",
+    "goodPattern": "Only redirect to relative paths that start with a single slash, otherwise fall back to '/'.",
+    "severity": "high",
+    "sourceCommit": "450d088",
+    "id": "scar-001",
+    "createdAt": "2026-10-03T10:15:00.000Z"
+  },
+  {
+    "title": "SQL built by string concatenation",
+    "whatWentWrong": "A query was assembled by joining user input into the SQL string, which allows SQL injection.",
+    "badPattern": "db.query(\"SELECT * FROM users WHERE id = \" + id)",
+    "badRegex": "/(SELECT|INSERT|UPDATE|DELETE)\\b.*[\"'\\x60]\\s*\\+\\s*[A-Za-z_]/i",
+    "goodPattern": "Use placeholders: db.query(\"SELECT * FROM users WHERE id = ?\", [id])",
+    "severity": "critical",
+    "sourceCommit": "a3a2995",
+    "id": "scar-002",
+    "createdAt": "2026-10-05T10:15:00.000Z"
+  },
+  {
+    "title": "Hardcoded secret",
+    "whatWentWrong": "A key or password was written directly in source code and ended up in version control.",
+    "badPattern": "const API_KEY = \"sk_live_abcdef123456\"",
+    "badRegex": "/(api_?key|secret|token|password)\\w*\\s*=\\s*[\"'][A-Za-z0-9_\\-]{12,}[\"']/i",
+    "goodPattern": "Read it from the environment: const API_KEY = process.env.API_KEY",
+    "severity": "critical",
+    "sourceCommit": "b54a887",
+    "id": "scar-003",
+    "createdAt": "2026-10-07T10:15:00.000Z"
+  },
+  {
+    "title": "Missing await on async call",
+    "whatWentWrong": "An async function was called without await, so the code used a Promise instead of the real value.",
+    "badPattern": "const user = loadUser(id)",
+    "badRegex": "=\\s*(?!await\\b)(load|fetch)[A-Z]\\w*\\(",
+    "goodPattern": "const user = await loadUser(id)",
+    "severity": "medium",
+    "sourceCommit": "35bb7d8",
+    "id": "scar-004",
+    "createdAt": "2026-10-10T10:15:00.000Z"
+  },
+  {
+    "title": "Stack trace leaked to the client",
+    "whatWentWrong": "An error handler sent the raw stack trace in the HTTP response, exposing file paths and internals.",
+    "badPattern": "res.status(500).send(err.stack)",
+    "badRegex": "res\\.(status\\(\\d+\\)\\.)?(send|json)\\(\\s*err(or)?\\.stack",
+    "goodPattern": "Log the error on the server and send a generic message: res.status(500).send('Something went wrong')",
+    "severity": "low",
+    "sourceCommit": "4d50200",
+    "id": "scar-005",
+    "createdAt": "2026-10-12T10:15:00.000Z"
+  },
+  {
+    "title": "Pagination skipped the first page of results",
+    "whatWentWrong": "Fixed in a past commit: fix: pagination skipped the first page of results",
+    "badPattern": "return items.slice(page * size, (page + 1) * size);",
+    "goodPattern": "return items.slice((page - 1) * size, page * size);",
+    "severity": "medium",
+    "sourceCommit": "1929009",
+    "id": "scar-006",
+    "createdAt": "2026-10-17T08:31:22.861Z"
+  }
+]

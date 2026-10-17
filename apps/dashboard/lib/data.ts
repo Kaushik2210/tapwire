@@ -1,12 +1,16 @@
 import { existsSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { readEvents, readScars, type Scar, type ScarEvent } from "@scar/core";
+import sampleScars from "../demo-data/scars.json";
+import sampleEvents from "../demo-data/events.json";
 
 export interface RepoData {
   repo: string;
   scars: Scar[];
   events: ScarEvent[];
   error?: string;
+  /** True when showing the bundled sample data instead of a real repository. */
+  sample?: boolean;
 }
 
 export function repoPath() {
@@ -16,6 +20,10 @@ export function repoPath() {
 /** Never throws: problems come back as `error` so pages can show a friendly message. */
 export function loadRepo(): RepoData {
   const repo = repoPath();
+  // No repo configured and no demo repo on disk (for example a deployed site): show the bundled sample data.
+  if (process.env.SCAR_SAMPLE === "1" || (!process.env.SCAR_REPO && !existsSync(repo))) {
+    return { repo: "demo-repo", scars: sampleScars as unknown as Scar[], events: sampleEvents as unknown as ScarEvent[], sample: true };
+  }
   if (!existsSync(repo) || !statSync(repo).isDirectory()) {
     return {
       repo,

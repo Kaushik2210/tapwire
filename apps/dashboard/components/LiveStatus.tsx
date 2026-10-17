@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 const INTERVAL_MS = 4000;
 
 /** Re-reads the .scars folder every few seconds so a `scar check` in the terminal shows up without a reload. */
-export function LiveStatus({ repo }: { repo: string }) {
+export function LiveStatus({ repo, sample = false }: { repo: string; sample?: boolean }) {
   const router = useRouter();
   const [live, setLive] = useState(true);
   const [ago, setAgo] = useState(0);
@@ -17,7 +17,7 @@ export function LiveStatus({ repo }: { repo: string }) {
   }, []);
 
   useEffect(() => {
-    if (!live) return;
+    if (!live || sample) return;
     const id = setInterval(() => {
       if (document.visibilityState === "visible") {
         router.refresh();
@@ -25,12 +25,22 @@ export function LiveStatus({ repo }: { repo: string }) {
       }
     }, INTERVAL_MS);
     return () => clearInterval(id);
-  }, [live, router]);
+  }, [live, sample, router]);
 
   useEffect(() => {
     const id = setInterval(() => setAgo(Math.floor((Date.now() - last.current) / 1000)), 1000);
     return () => clearInterval(id);
   }, []);
+
+  if (sample) {
+    return (
+      <span className="watching" title="Bundled sample data: there is no repository to watch here.">
+        <span className="pulse" aria-hidden="true" style={{ animation: "none", background: "var(--text-2)" }} />
+        <span>{repo}</span>
+        <span className="live-tag">sample data</span>
+      </span>
+    );
+  }
 
   return (
     <button
