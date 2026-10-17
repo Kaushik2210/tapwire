@@ -60,24 +60,89 @@ Re-run `npm run demo:setup` at any time to rebuild the demo from scratch.
 - **Copy as agent rule:** on a scar, copy a ready-made rule to paste into your agent's instructions.
 - **Light, dark or system theme** from the toggle in the top bar.
 
-### Using it on your own repo
+## Use TapWire in your own project
+
+You need Node 20+ and git. TapWire works in any git repository and any language, because it reads your diffs.
+
+### 1. Install
 
 ```bash
-npm run scar -- --repo /path/to/your/repo capture <commit-sha>
-npm run scar -- --repo /path/to/your/repo check            # or: check --staged
-npm run scar -- --repo /path/to/your/repo export
-SCAR_REPO=/path/to/your/repo npm run dev --workspace @scar/dashboard
+npm install -g https://github.com/Kaushik2210/tapwire/releases/download/v0.1.1/kaushik2210-tapwire-0.1.1.tgz
+tapwire --version
 ```
 
-`scar check` exits `1` when it finds a repeat, `0` when clean and `2` on errors, so it can be used in a CI step.
+This gives you the `tapwire` command (and the short alias `scar`). The package is not on the npm registry yet; the release file above is the install source. To use the AI features, set `ANTHROPIC_API_KEY` in your environment or in a local `.env` file (keep it out of git). Without a key, `check --offline` still works.
 
-To block bad commits automatically, install the pre-commit hook:
+### 2. Set up once per repository
 
 ```bash
-npm run scar -- --repo /path/to/your/repo hook install     # remove with: hook uninstall
+cd your-repo
+tapwire init
 ```
 
-The hook runs `scar check --staged` before every commit and refuses the commit if a scar comes back (bypass once with `git commit --no-verify`). It never overwrites a pre-commit hook it did not write.
+`init` creates the `.scars/` store (commit it, so your team shares the scars), installs a pre-commit hook, and adds a "Scars" section to `AGENTS.md` and `CLAUDE.md`, which AI coding agents read before they work.
+
+### 3. The everyday loop
+
+1. Your AI (or you) writes a bug, and you fix it and commit the fix as usual.
+2. `tapwire capture <commit-sha> --export` turns that fix into a scar and refreshes the agent's instructions.
+3. From then on, if that mistake comes back, the commit is blocked and the line is named. `tapwire status` shows the Amnesia Rate and whether everything is wired up; the dashboard shows it over time.
+
+### 4. Where the mistake gets stopped
+
+A scar works at three points, from soft to hard:
+
+| Layer | What happens | Can it be skipped? |
+| --- | --- | --- |
+| **Agent instructions** | `AGENTS.md` and `CLAUDE.md` list the past mistakes and tell the agent to run `scar check` before finishing. | Yes: an agent can ignore them. |
+| **Self-check** | The agent (or you) runs `tapwire check`. It exits `1` and prints the file, line, reason and the correct pattern. | Yes: only if nobody runs it. |
+| **Pre-commit hook / CI** | `tapwire check --staged` runs on every commit, and `tapwire check --base origin/main` can fail a pull request. | A developer can bypass the hook with `git commit --no-verify`; CI cannot be bypassed by a local commit. |
+
+### 5. Block it in CI
+
+```yaml
+# .github/workflows/tapwire.yml  (example; the --base logic is tested, this workflow file has not been run on GitHub)
+name: TapWire
+on: pull_request
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # TapWire needs the base branch history
+      - run: npm install -g https://github.com/Kaushik2210/tapwire/releases/download/v0.1.1/kaushik2210-tapwire-0.1.1.tgz
+      - run: tapwire check --base origin/${{ github.base_ref }} --offline
+```
+
+Use `--offline` in CI and hooks unless you want an LLM request on every run; drop it to also run the semantic pass (set `ANTHROPIC_API_KEY` as a secret).
+
+### Commands
+
+| Command | What it does |
+| --- | --- |
+| `tapwire init [--no-hook] [--semantic]` | Set up the store, hook and agent notes. |
+| `tapwire capture <sha> [--export]` | Turn a fixing commit into a scar. |
+| `tapwire check [--staged] [--base <ref>] [--offline] [--json] [--no-record]` | Flag repeats; exit `1` if found, `2` on a tool error. |
+| `tapwire status` | Show setup, scar count, Amnesia Rate and AI mode. |
+| `tapwire export` | Refresh the Scars section in `AGENTS.md` and `CLAUDE.md`. |
+| `tapwire hook install [--semantic]` / `hook uninstall` | Manage the pre-commit hook (only ever removes its own). |
+
+### What this can and cannot do
+
+TapWire cannot stop an AI from *writing* a mistake: it has no control over the model. What it does is make a repeat of a **known, fixed** mistake get noticed, named and blocked before it lands, tell the agent about it up front, and measure how often it happens. Be realistic about its limits:
+
+- It only knows mistakes you have captured. A new kind of bug is a new mistake, not a repeat.
+- Detection is only as good as the pattern. Regex catches a mistake in the shape it was first seen; the optional LLM pass looks for reworded versions and can miss some or flag false positives (see "Mock mode" below for what has and has not been tested).
+- The hook is a safety net for honest workflows, not a security boundary: `--no-verify` bypasses it.
+- The hook only blocks when a repeat is found. If the tool itself fails (missing, crashed, or no network), the commit is allowed and a warning is printed, so TapWire can never stop someone from committing.
+- Files TapWire manages (`.scars/`, `AGENTS.md`, `CLAUDE.md`) are never checked, because they quote the bad patterns on purpose.
+
+`npm run test:install` proves the install path: it packs the CLI, installs it into an empty project, and runs this whole workflow on a fresh repository with real `git commit` calls.
+
+### Working on this repository itself
+
+From a clone, the same commands run as `npm run scar -- --repo /path/to/repo <command>`, and the dashboard reads a repository with `SCAR_REPO=/path/to/repo npm run dev --workspace @scar/dashboard`.
 
 ## Mock mode (no API key)
 
@@ -146,6 +211,7 @@ Data model: `scars.json` holds `{ id, title, whatWentWrong, badPattern, badRegex
 ```bash
 npm test               # matcher, diff parser, Amnesia Rate, trend, export, hook, mock capture
 npm run typecheck
+npm run test:install   # packs the CLI, installs it into an empty project and runs the whole workflow with real git commits
 npm run a11y:contrast  # WCAG AA contrast audit of every dashboard text colour, light and dark
 ```
 
