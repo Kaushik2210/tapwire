@@ -46,11 +46,13 @@ Take notes while recording: the Amnesia Rate goes 29% → 25% (capture) → 33% 
 
 ## 4. Pre-submit checklist
 
-- [ ] GitHub repository is **public** and its About section shows the MIT license.
-- [ ] Repository has no collaborators other than you (Settings → Collaborators).
-- [ ] `LICENSE`, `README.md`, `.env.example` and the planning docs (`devpost/scope.md`, `prd.md`, `spec.md`, `checklist.md`) are present on the default branch.
-- [ ] Clean-clone test passed: `git clone`, `npm install && npm run demo`.
-- [ ] No secrets or personal files in the repo or its history; `devpost/learner-profile.md` is not committed.
+Already verified (from a fresh unauthenticated clone of the public repo): the repo is public at https://github.com/Kaushik2210/tapwire, MIT licence is detected, you are the only collaborator, `npm ci`, tests, typecheck, build and the demo flow all pass, and the history contains no secrets, `.env` files or the private learner profile. Still yours to do: the items below that are unchecked.
+
+- [x] GitHub repository is **public** and its About section shows the MIT license.
+- [x] Repository has no collaborators other than you (Settings → Collaborators).
+- [x] `LICENSE`, `README.md`, `.env.example` and the planning docs (`devpost/scope.md`, `prd.md`, `spec.md`, `checklist.md`) are present on the default branch.
+- [x] Clean-clone test passed: `git clone`, `npm install && npm run demo`.
+- [x] No secrets or personal files in the repo or its history; `devpost/learner-profile.md` is not committed.
 - [ ] Demo video is under 3:00, shows the working flow, and is public or unlisted on YouTube or Vimeo; link tested in a private window.
 - [ ] Project name, description and other Devpost fields written by you; exit survey completed by you.
 - [ ] Submit on Devpost before the deadline (Oct 26).
