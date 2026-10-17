@@ -1,0 +1,38 @@
+{
+  "voice": "Vanishree - Professional Energetic Indian English (ElevenLabs voice TmPeb2hSxdVrThJLywkg)",
+  "note": "Draft narration, one entry per scene. Edit any line, regenerate that scene's audio, and re-render. The demo video is yours to approve and change.",
+  "scenes": [
+    {
+      "id": "01-hook",
+      "text": "AI coding agents are brilliant, and they forget. You fix a bug on Monday. By Friday, the agent writes the very same bug again. A note in a rules file does not stop it. It never enforces anything, and it never tells you whether it worked."
+    },
+    {
+      "id": "02-intro",
+      "text": "This is TapWire. It turns every mistake an AI agent makes into a permanent, enforced rule, and it measures how often the agent repeats a mistake you already fixed."
+    },
+    {
+      "id": "03-capture",
+      "text": "It starts with a fix. Run tapwire capture on the commit that fixed the bug, and TapWire saves a scar: what went wrong, the bad pattern, the correct pattern, and how serious it is. The scar is written into the agent's instructions, so it reads past mistakes before it writes code. This demo runs in mock mode, with no A P I key."
+    },
+    {
+      "id": "04-agent",
+      "text": "Now the important part. An agent is asked to tidy the login flow, and it writes the old mistake again. The moment it saves the file, TapWire checks that edit and sends a message straight back to the agent: what it wrote, why it is wrong, and what to do instead. The agent rewrites the line correctly, and the next check is clean. The repeat is caught the instant it is written, and fixed in the same turn."
+    },
+    {
+      "id": "05-commit",
+      "text": "If a repeat ever does reach a commit, the pre-commit hook refuses it, naming the file and the line. In C I, the same check can fail a pull request."
+    },
+    {
+      "id": "06-dashboard",
+      "text": "Every catch is measured. The dashboard shows the Amnesia Rate, the share of recorded mistakes that were repeats, charted over time. The log shows exactly how each repeat was caught: agent hook, pre-commit hook, or manual check."
+    },
+    {
+      "id": "07-try",
+      "text": "You can try it right now in the browser. Paste code, and TapWire points to the exact line that repeats a past scar."
+    },
+    {
+      "id": "08-close",
+      "text": "TapWire installs with one command and works in any language. It cannot stop a model from writing a mistake, but it makes sure a known mistake is noticed, named, and fixed, and it shows you the proof. TapWire: so your A I stops repeating itself."
+    }
+  ]
+}

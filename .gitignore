@@ -17,3 +17,7 @@ dist/
 /devpost/learner-profile.md
 next-env.d.ts
 *.tsbuildinfo
+
+# demo video build output and dependencies
+video/node_modules/
+video/out/

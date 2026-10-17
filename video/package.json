@@ -1,0 +1,23 @@
+{
+  "name": "tapwire-demo-video",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Source for the TapWire demo video: real terminal output and 1080p dashboard captures composed with Remotion, plus narration audio.",
+  "scripts": {
+    "capture": "node capture.mjs",
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts TapWire out/tapwire-demo.mp4 --codec=h264 --crf=18 --concurrency=4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.250",
+    "@remotion/media-utils": "4.0.250",
+    "playwright-core": "^1.49.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.250"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "typescript": "^5.6.0"
+  }
+}
