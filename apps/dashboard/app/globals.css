@@ -11,12 +11,12 @@
   --text-2: #5a5446;
   --separator: rgba(23, 20, 15, 0.14);
   --separator-strong: rgba(23, 20, 15, 0.28);
-  --accent: #bf3f0a;
-  --accent-bg: rgba(191, 63, 10, 0.1);
+  --accent: #a63608;
+  --accent-bg: rgba(166, 54, 8, 0.1);
   --good: #0c6b57;
   --good-bg: rgba(12, 107, 87, 0.11);
-  --warn: #8f5a00;
-  --warn-bg: rgba(143, 90, 0, 0.12);
+  --warn: #7a4e00;
+  --warn-bg: rgba(122, 78, 0, 0.12);
   --crit: #b4143f;
   --crit-bg: rgba(180, 20, 63, 0.1);
   --grid: rgba(23, 20, 15, 0.055);

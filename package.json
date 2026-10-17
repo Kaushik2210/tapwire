@@ -19,7 +19,8 @@
     "demo": "tsx demo/setup.ts && npm run dev --workspace @scar/dashboard",
     "demo:setup": "tsx demo/setup.ts",
     "demo:repeat": "tsx demo/repeat.ts",
-    "demo:capture": "tsx demo/capture.ts"
+    "demo:capture": "tsx demo/capture.ts",
+    "a11y:contrast": "node scripts/contrast.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
