@@ -212,7 +212,7 @@ flowchart LR
 | `packages/cli` | the `scar` command |
 | `apps/dashboard` | Next.js App Router dashboard (reads `.scars/` of the repo in `SCAR_REPO`) |
 | `demo/` | scripts that build `demo-repo/` and play the capture and repeat scenes |
-| `devpost/` | the planning documents: scope, PRD, spec and build checklist |
+| `devpost/` | the planning documents: scope, PRD, spec and build checklist (the hackathon asks for `scope.md`, `prd.md` and `spec.md`; identical copies of those three are also in the repository root) |
 
 Data model: `scars.json` holds `{ id, title, whatWentWrong, badPattern, badRegex?, goodPattern, severity, sourceCommit, createdAt }`; `events.json` holds `{ id, type, scarId, file?, line?, reason?, at }`. Both are plain JSON in the repo.
 

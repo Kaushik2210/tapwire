@@ -64,6 +64,9 @@ Already verified (from a fresh unauthenticated clone of the public repo): the re
 - [x] `LICENSE`, `README.md`, `.env.example` and the planning docs (`devpost/scope.md`, `prd.md`, `spec.md`, `checklist.md`) are present on the default branch.
 - [x] Clean-clone test passed: `git clone`, `npm install && npm run demo`.
 - [x] No secrets or personal files in the repo or its history; `devpost/learner-profile.md` is not committed.
-- [ ] Demo video is under 3:00, shows the working flow, and is public or unlisted on YouTube or Vimeo; link tested in a private window.
+- [ ] Demo video is under 3:00, shows the working flow, and is **public** on YouTube or Vimeo (the official rules say "publicly visible", so not unlisted or private); link tested in a private window.
+- [ ] Voice credit: if the AI voice was generated on a free ElevenLabs plan, the title or description must credit it (include `elevenlabs.io`); on a paid plan this is not required. Check your plan.
+- [ ] You have clicked **Start project** on https://learn-ai-basics.devpost.com/ (this joins the hackathon and accepts its rules).
+- [ ] Deadline: **Oct 26, 2026, 5:00 pm Eastern**, which is **Oct 27, 2:30 am IST**. Submit well before it.
 - [ ] Project name, description and other Devpost fields written by you; exit survey completed by you.
 - [ ] Submit on Devpost before the deadline (Oct 26).
