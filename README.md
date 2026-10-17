@@ -86,7 +86,21 @@ Set `SCAR_MOCK=1` and every LLM step uses built-in fixtures instead of the API:
 
 Everything in the demo works this way. Mock mode is a stand-in, not a model: for real semantic matching use live mode.
 
-**Live mode:** copy `.env.example` to `.env`, set `ANTHROPIC_API_KEY`, and make sure `SCAR_MOCK` is unset. The key is only ever read from the environment. Live mode was not exercised against the real API while building this project (there was no key in the build environment), so treat it as untested. `SCAR_MODEL` overrides the model id.
+**Live mode:** copy `.env.example` to `.env`, set `ANTHROPIC_API_KEY`, and make sure `SCAR_MOCK` is unset. The key is only ever read from the environment. `SCAR_MODEL` overrides the model id.
+
+What has and has not been tested in live mode:
+- **Tested:** the live code path runs against a local stand-in for the Anthropic Messages API (`packages/core/test/live.test.ts`, 13 tests). The real SDK makes real HTTP requests to it, so the key and model are sent, the diff is included, replies are parsed (including fenced or chatty JSON), bad replies and API failures are handled, and `check` falls back to regex results with a notice.
+- **Not yet verified:** how well the real model writes scars and spots reworded repeats. Run `npm run live:test` with your own key to find out: it makes about four requests, asserts the hard requirements (a complete scar, the same mistake caught in a new file, corrected and unrelated code left alone) and reports model-dependent checks as warnings.
+
+## Deploy the dashboard
+
+The dashboard is a standard Next.js app, and it needs no database or API key to show the demo: when no repository is configured and there is no `demo-repo/`, it shows a bundled snapshot of the demo data (`apps/dashboard/demo-data/`) and labels it "sample data". Refresh the snapshot with `npm run demo:setup && npm run demo:capture && npm run demo:repeat && npm run demo:snapshot`.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKaushik2210%2Ftapwire&root-directory=apps%2Fdashboard&project-name=tapwire)
+
+By hand on Vercel: import the repository, set **Root Directory** to `apps/dashboard`, leave the framework as Next.js, and deploy (no environment variables are needed). To point a deployed dashboard at real data instead, set `SCAR_REPO` to a path the server can read.
+
+The hosted dashboard shows sample data only. Capture, check and export are CLI features that run against a local repository.
 
 ## Architecture
 
