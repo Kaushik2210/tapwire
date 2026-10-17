@@ -128,9 +128,12 @@ Data model: `scars.json` holds `{ id, title, whatWentWrong, badPattern, badRegex
 ## Tests
 
 ```bash
-npm test          # matcher, diff parser, Amnesia Rate, trend, export, mock capture
+npm test               # matcher, diff parser, Amnesia Rate, trend, export, hook, mock capture
 npm run typecheck
+npm run a11y:contrast  # WCAG AA contrast audit of every dashboard text colour, light and dark
 ```
+
+The dashboard follows the system light/dark setting (with a manual toggle), keeps every interactive target at least 44px, shows visible focus rings, supports full keyboard use including the chart, and turns off its animations when reduced motion is requested.
 
 ## How it was built
 
