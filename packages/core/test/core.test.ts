@@ -89,6 +89,21 @@ describe("parseAddedLines", () => {
   });
 });
 
+describe("managed files are never checked", () => {
+  it("ignores the scar store and the exported instruction files, which quote bad patterns on purpose", () => {
+    const bad = 'db.query("SELECT * FROM t WHERE a = " + a);';
+    for (const file of [".scars/scars.json", "packages/x/.scars/scars.json", "AGENTS.md", "CLAUDE.md"]) {
+      expect(checkDiff(scars, diffOf(file, [bad])).regexHits, file).toEqual([]);
+    }
+  });
+
+  it("still checks ordinary files, including other markdown", () => {
+    const bad = 'db.query("SELECT * FROM t WHERE a = " + a);';
+    expect(checkDiff(scars, diffOf("docs/AGENTS.md.js", [bad])).regexHits).toHaveLength(1);
+    expect(checkDiff(scars, diffOf("src/app.js", [bad])).regexHits).toHaveLength(1);
+  });
+});
+
 describe("regex matcher", () => {
   it("flags each demo mistake when it is reintroduced", () => {
     const cases: [string, string][] = [
