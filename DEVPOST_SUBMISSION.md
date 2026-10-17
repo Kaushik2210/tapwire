@@ -9,11 +9,12 @@ Everything below is checkable in this repository.
 - **What it is:** a TypeScript CLI (`scar`) plus a Next.js dashboard. Both work on the same two JSON files in a repo's `.scars/` folder.
 - **Capture:** `scar capture <sha>` turns a fixing commit into a scar (title, what went wrong, bad pattern with optional regex, correct pattern, severity) and logs a `new_mistake` event.
 - **Guard:** `scar check` scans the staged or working diff. Regex runs first, then an LLM pass for semantic matches. Each hit gives scar, file, line and reason, logs a `repeat` event and exits 1.
+- **Instant agent feedback:** `tapwire agent-check` runs right after an AI agent edits a file (an agent's post-edit hook feeds it the edit as JSON on stdin). If the edit repeats a past mistake, the agent gets a message with what it wrote, why it is wrong and what to do instead (exit code 2), and can fix it in the same turn. `tapwire watch` does the same for editors without hooks, and the dashboard shows how each repeat was caught (agent hook, pre-commit hook, watch mode or manual check).
 - **Feed back:** `scar export` writes a managed "Scars" section into `AGENTS.md` and `CLAUDE.md`, replaced in place on re-runs.
 - **Measure:** Amnesia Rate = repeats ÷ (repeats + new mistakes), shown as a gauge, a trend chart and a headline stat; plus a scar list, scar detail with before/after, and a "Caught repeats" feed. Empty, loading and error states exist.
 - **Who it's for:** beginners and solo builders who code with AI agents.
 - **Mock mode:** `SCAR_MOCK=1` runs the full demo with no API key.
-- **Verified:** 45 tests (matcher, diff parser, rate, trend, export, hook, mock capture, and 13 live-mode tests against a local stand-in for the Anthropic API); capture, check and export run end to end against a generated demo repo; an install test (`npm run test:install`) that packs the CLI, installs it into an empty project and runs init, capture, check, the pre-commit hook (blocking and allowing real `git commit` calls) and CI mode on a fresh repository; every dashboard page renders (including not-found, missing-repo and bundled-sample-data states); all dashboard text colours meet WCAG AA in both themes (`npm run a11y:contrast`).
+- **Verified:** 53 tests (matcher, diff parser, rate, trend, export, hook, mock capture, and 13 live-mode tests against a local stand-in for the Anthropic API); capture, check and export run end to end against a generated demo repo; an install test (`npm run test:install`, 27 checks) that packs the CLI, installs it into an empty project and runs init, capture, check, agent-check with real hook JSON on stdin, watch as a live process, the pre-commit hook (blocking and allowing real `git commit` calls) and CI mode on a fresh repository; every dashboard page renders (including not-found, missing-repo and bundled-sample-data states); all dashboard text colours meet WCAG AA in both themes (`npm run a11y:contrast`).
 - **Not verified:** how the real model behaves. The live code path is tested against a local stand-in for the API, but `npm run live:test` (about four real requests) has not been run with a real key. Run it once and note the result before submitting.
 - **Honest caveat worth knowing:** a blocked repeat is recorded as a repeat, so the rate goes *up* when the guard fires and *down* when a new scar is captured.
 
@@ -28,7 +29,16 @@ Use these to write the Devpost fields yourself.
 - What did you learn while building it (about the idea, the tools, or working with an agent)?
 - What would you do next?
 
-## 3. Demo video: shot list (target 2:30, hard limit under 3:00)
+## 3a. The demo video that has been made for you
+
+A draft demo video is built from real terminal output and real 1080p captures of the dashboard, with an Indian-English AI voice-over and captions: see `video/` (`video/README.md` explains how to rebuild or change it). It is about 2 minutes 20 seconds, well under the 3-minute limit. Before you use it:
+
+- Watch it all the way through and decide whether you are happy with it. The narration is AI-written and AI-voiced (`video/narration.json`); change any line, or record your own voice.
+- The skill pack asks that Devpost submission text be your own writing. Check whether that also covers an AI-written narration, and edit or replace it if so.
+- Scene 6 (the dashboard) currently plays with on-screen callouts and captions only: its voice clip could not be generated because the voice service disabled free-tier access on the connected account. Fix that account issue with the provider, generate that one clip into `video/public/audio/06-dashboard.mp3`, and re-render.
+- You still have to upload the video (YouTube or Vimeo) and paste the link.
+
+## 3b. Shot list if you record your own take (target 2:30, hard limit under 3:00)
 
 Record the terminal and the dashboard in a clean window with no other apps, tabs or credentials visible. Run `npm run demo` beforehand so the dashboard is open at <http://localhost:3000>. Reset between takes with `npm run demo:setup`. These are screen actions and timings only; the spoken words are yours.
 
