@@ -31,11 +31,10 @@ Use these to write the Devpost fields yourself.
 
 ## 3a. The demo video that has been made for you
 
-A draft demo video is built from real terminal output and real 1080p captures of the dashboard, with an Indian-English AI voice-over and captions: see `video/` (`video/README.md` explains how to rebuild or change it). It is about 2 minutes 20 seconds, well under the 3-minute limit. Before you use it:
+A draft demo video is built from real terminal output and real 1080p captures of the dashboard, with a male Indian-English AI voice-over and captions: see `video/` (`video/README.md` explains how to rebuild or change it). It is about 2 minutes 10 seconds, well under the 3-minute limit. Before you use it:
 
 - Watch it all the way through and decide whether you are happy with it. The narration is AI-written and AI-voiced (`video/narration.json`); change any line, or record your own voice.
 - The skill pack asks that Devpost submission text be your own writing. Check whether that also covers an AI-written narration, and edit or replace it if so.
-- Scene 6 (the dashboard) currently plays with on-screen callouts and captions only: its voice clip could not be generated because the voice service disabled free-tier access on the connected account. Fix that account issue with the provider, generate that one clip into `video/public/audio/06-dashboard.mp3`, and re-render.
 - You still have to upload the video (YouTube or Vimeo) and paste the link.
 
 ## 3b. Shot list if you record your own take (target 2:30, hard limit under 3:00)
