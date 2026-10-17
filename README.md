@@ -45,6 +45,7 @@ Then, in a second terminal, play the story:
 ```bash
 npm run demo:capture   # capture a scar from the newest fix commit (rate goes down)
 npm run demo:repeat    # a scripted "agent" repeats a fixed mistake; scar check blocks it
+npm run demo:agent     # the instant feedback loop: the agent is told, fixes it, and the next check is clean
 ```
 
 Refresh the dashboard: the new scar appears in **Scars**, the blocked repeat appears in **Caught repeats**, and the Amnesia Rate gauge and trend move. The seeded history in `demo-repo/.scars/` is sample data, not real usage.
@@ -67,7 +68,7 @@ You need Node 20+ and git. TapWire works in any git repository and any language,
 ### 1. Install
 
 ```bash
-npm install -g https://github.com/Kaushik2210/tapwire/releases/download/v0.1.1/kaushik2210-tapwire-0.1.1.tgz
+npm install -g https://github.com/Kaushik2210/tapwire/releases/download/v0.2.0/kaushik2210-tapwire-0.2.0.tgz
 tapwire --version
 ```
 
@@ -85,18 +86,24 @@ tapwire init
 ### 3. The everyday loop
 
 1. Your AI (or you) writes a bug, and you fix it and commit the fix as usual.
-2. `tapwire capture <commit-sha> --export` turns that fix into a scar and refreshes the agent's instructions.
+2. `tapwire capture --export` turns that fix into a scar and refreshes the agent's instructions.
 3. From then on, if that mistake comes back, the commit is blocked and the line is named. `tapwire status` shows the Amnesia Rate and whether everything is wired up; the dashboard shows it over time.
 
 ### 4. Where the mistake gets stopped
 
-A scar works at three points, from soft to hard:
+A scar works at several points, from soft to hard. The strongest for day-to-day work is the one in the middle: **the agent hears about a repeat right after it writes it, and fixes it in the same turn.**
 
 | Layer | What happens | Can it be skipped? |
 | --- | --- | --- |
 | **Agent instructions** | `AGENTS.md` and `CLAUDE.md` list the past mistakes and tell the agent to run `scar check` before finishing. | Yes: an agent can ignore them. |
+| **Instant agent feedback** (`tapwire agent-check`) | Right after the agent edits a file, a post-edit hook runs TapWire on that file. If it repeats a past mistake, the agent gets a message: what it wrote, why it is wrong, and what to do instead. It can correct itself immediately. | Only if the agent's hook is not set up (`tapwire agent-setup` shows how). |
+| **Watch mode** (`tapwire watch`) | For editors and agents without hooks: alerts you (and rings the terminal bell) the moment a repeat is written to disk. | Only if it is not running. |
 | **Self-check** | The agent (or you) runs `tapwire check`. It exits `1` and prints the file, line, reason and the correct pattern. | Yes: only if nobody runs it. |
 | **Pre-commit hook / CI** | `tapwire check --staged` runs on every commit, and `tapwire check --base origin/main` can fail a pull request. | A developer can bypass the hook with `git commit --no-verify`; CI cannot be bypassed by a local commit. |
+
+See the instant feedback loop yourself: `npm run demo:agent` plays an agent writing a fixed mistake, receiving TapWire's message, fixing it, and passing the next check. The dashboard's "Caught repeats" page shows how each one was caught (agent hook, pre-commit hook, watch mode or manual check).
+
+To turn it on for your agent, run `tapwire agent-setup`. It prints a ready-to-paste hook config for agents that run a command after each file edit (the command receives the edit as JSON on stdin, and exit code `2` returns the message to the agent). The exact config format depends on your agent. This has been tested by feeding hook JSON to `agent-check` and by running `watch` as a live process, not by running inside every agent product.
 
 ### 5. Block it in CI
 
@@ -111,7 +118,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0          # TapWire needs the base branch history
-      - run: npm install -g https://github.com/Kaushik2210/tapwire/releases/download/v0.1.1/kaushik2210-tapwire-0.1.1.tgz
+      - run: npm install -g https://github.com/Kaushik2210/tapwire/releases/download/v0.2.0/kaushik2210-tapwire-0.2.0.tgz
       - run: tapwire check --base origin/${{ github.base_ref }} --offline
 ```
 
@@ -122,8 +129,11 @@ Use `--offline` in CI and hooks unless you want an LLM request on every run; dro
 | Command | What it does |
 | --- | --- |
 | `tapwire init [--no-hook] [--semantic]` | Set up the store, hook and agent notes. |
-| `tapwire capture <sha> [--export]` | Turn a fixing commit into a scar. |
+| `tapwire capture [sha] [--export]` | Turn a fixing commit into a scar (default: your latest commit). |
 | `tapwire check [--staged] [--base <ref>] [--offline] [--json] [--no-record]` | Flag repeats; exit `1` if found, `2` on a tool error. |
+| `tapwire agent-check [--file <path...>] [--semantic]` | For an agent's post-edit hook: reads the edit from stdin and exits `2` with a message for the agent if it repeated a mistake. |
+| `tapwire watch [--semantic]` | Flag a repeat the moment it is written to disk. |
+| `tapwire agent-setup` | Print the hook config that gives your agent instant feedback. |
 | `tapwire status` | Show setup, scar count, Amnesia Rate and AI mode. |
 | `tapwire export` | Refresh the Scars section in `AGENTS.md` and `CLAUDE.md`. |
 | `tapwire hook install [--semantic]` / `hook uninstall` | Manage the pre-commit hook (only ever removes its own). |
