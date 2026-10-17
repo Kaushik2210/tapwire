@@ -292,7 +292,7 @@ export const S7: React.FC<SceneProps> = ({ scale }) => {
           <Shot
             src="shots/live-try.png"
             width={1380}
-            focus={{ x: 404, y: 279, w: 1112, h: 524 }}
+            focus={{ x: 404, y: 330, w: 1112, h: 524 }}
             p={zoom}
             highlights={[
               { x: 997, y: 432, w: 494, h: 24, show: hit },
