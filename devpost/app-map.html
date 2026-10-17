@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TapWire app map</title>
+<style>
+  :root { color-scheme: light dark; --bg:#f3f0e8; --surface:#faf8f2; --text:#17140f; --muted:#5a5446; --line:rgba(23,20,15,.16); --accent:#bf3f0a; --code:#ebe7dc; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0c0c0e; --surface:#141417; --text:#f1eee6; --muted:#a9a498; --line:rgba(241,238,230,.14); --accent:#ff8f55; --code:#1c1c20; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:1rem/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  main { max-width: 52rem; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { font: 600 clamp(2rem,6vw,2.75rem)/1.1 ui-serif,Georgia,serif; margin: .25rem 0 .75rem; }
+  h2 { font: 600 1.5rem/1.2 ui-serif,Georgia,serif; margin: 2.5rem 0 .75rem; }
+  h3 { font-size: 1.0625rem; margin: 0 0 .25rem; }
+  p { margin: 0 0 .75rem; }
+  .eyebrow { font: .75rem ui-monospace,Consolas,monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  code { font-family: ui-monospace,Consolas,monospace; font-size: .875em; background: var(--code); padding: .1rem .35rem; border-radius: .3rem; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: .875rem; padding: 1.25rem; }
+  .grid { display: grid; gap: 1rem; }
+  @media (min-width: 40rem) { .grid.two { grid-template-columns: 1fr 1fr; } }
+  ol.stops { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; counter-reset: s; }
+  ol.stops li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: .875rem; padding: 1.25rem 1.25rem 1.25rem 3.5rem; position: relative; }
+  ol.stops li::before { content: counter(s); position: absolute; left: 1.1rem; top: 1.2rem; width: 1.75rem; height: 1.75rem; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); font: 700 .8125rem ui-monospace,Consolas,monospace; }
+  .path { font-family: ui-monospace,Consolas,monospace; font-size: .875rem; color: var(--accent); word-break: break-all; }
+  table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+  th, td { text-align: left; padding: .6rem .5rem; border-top: 1px solid var(--line); vertical-align: top; }
+  th { border-top: 0; color: var(--muted); font-weight: 600; font-size: .8125rem; }
+  svg { width: 100%; height: auto; display: block; }
+  svg text { fill: var(--text); font: 12px -apple-system,Segoe UI,sans-serif; }
+  svg .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+  svg .hot { stroke: var(--accent); }
+  svg .arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#a); }
+  svg .sub { fill: var(--muted); font-size: 10.5px; font-family: ui-monospace,Consolas,monospace; }
+  .note { color: var(--muted); font-size: .875rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">TapWire · app map · snapshot of commit 71b0ce0</p>
+  <h1>Where things live</h1>
+  <p>TapWire is two programs that share two JSON files. A command-line tool (<code>scar</code>) writes <code>.scars/scars.json</code> and <code>.scars/events.json</code> inside a repo; a Next.js dashboard reads the same files and draws the Amnesia Rate. This map follows one action, catching a repeat, through the code. It is a reference route: nobody has walked it with you yet, and it is a snapshot that can drift as the code changes.</p>
+
+  <h2>One action, end to end</h2>
+  <div class="card">
+    <svg viewBox="0 0 720 150" role="img" aria-label="Flow: scar check reads the diff, matcher flags a line, an event is logged, the dashboard shows the new rate.">
+      <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#8a8473"/></marker></defs>
+      <rect class="box" x="6" y="30" width="150" height="70" rx="10"/><text x="81" y="58" text-anchor="middle">scar check</text><text class="sub" x="81" y="78" text-anchor="middle">cli/src/index.ts</text>
+      <rect class="box" x="186" y="30" width="150" height="70" rx="10"/><text x="261" y="58" text-anchor="middle">checkRepo</text><text class="sub" x="261" y="78" text-anchor="middle">core/src/check.ts</text>
+      <rect class="box" x="366" y="30" width="150" height="70" rx="10"/><text x="441" y="58" text-anchor="middle">matchRegex</text><text class="sub" x="441" y="78" text-anchor="middle">core/src/matcher.ts</text>
+      <rect class="box hot" x="546" y="30" width="168" height="70" rx="10"/><text x="630" y="58" text-anchor="middle">events.json + dashboard</text><text class="sub" x="630" y="78" text-anchor="middle">store.ts, apps/dashboard</text>
+      <path class="arrow" d="M156 65 H184"/><path class="arrow" d="M336 65 H364"/><path class="arrow" d="M516 65 H544"/>
+      <text class="sub" x="6" y="130">you run it</text><text class="sub" x="186" y="130">reads git diff, loads scars</text><text class="sub" x="366" y="130">flags the bad line</text><text class="sub" x="546" y="130">repeat logged, rate updates</text>
+    </svg>
+  </div>
+
+  <h2>A route through the code</h2>
+  <ol class="stops">
+    <li>
+      <h3>The command</h3>
+      <p class="path">packages/cli/src/index.ts → the <code>check</code> command</p>
+      <p>Parses options, calls <code>checkRepo</code>, prints each hit with the scar's title, file, line and the correct pattern, and sets the exit code to 1 when it finds a repeat. This is what the pre-commit hook runs.</p>
+    </li>
+    <li>
+      <h3>The check</h3>
+      <p class="path">packages/core/src/check.ts → <code>checkRepo</code>, <code>checkDiff</code></p>
+      <p>Runs <code>git diff</code>, reads the added lines, runs the regex matcher first and then the semantic pass (an LLM in live mode, a normalised pattern match in mock mode), removes duplicates and records one <code>repeat</code> event per hit with <code>addEvent</code>.</p>
+    </li>
+    <li>
+      <h3>The rate and the screen</h3>
+      <p class="path">packages/core/src/rate.ts → <code>computeAmnesiaRate</code> · apps/dashboard/lib/data.ts → <code>loadRepo</code> · apps/dashboard/app/page.tsx</p>
+      <p><code>loadRepo</code> reads the JSON files, <code>computeAmnesiaRate</code> divides repeats by repeats plus new mistakes, and the Overview page draws the result. The page refreshes itself every few seconds, so a repeat caught in the terminal appears without a reload.</p>
+    </li>
+  </ol>
+
+  <h2>To change this, start here</h2>
+  <div class="card">
+    <table>
+      <tr><th>I want to…</th><th>Start in</th></tr>
+      <tr><td>Add or tweak a built-in mock scar</td><td><code>packages/core/src/fixtures.ts</code></td></tr>
+      <tr><td>Change how a mistake is detected</td><td><code>packages/core/src/matcher.ts</code></td></tr>
+      <tr><td>Change what <code>scar export</code> writes</td><td><code>packages/core/src/export.ts</code> → <code>renderSection</code></td></tr>
+      <tr><td>Change the Amnesia Rate wording or thresholds</td><td><code>apps/dashboard/components/ui.tsx</code> → <code>status</code></td></tr>
+      <tr><td>Change colours and fonts</td><td><code>apps/dashboard/app/globals.css</code> (the tokens at the top)</td></tr>
+      <tr><td>Change the demo story</td><td><code>demo/setup.ts</code>, <code>demo/capture.ts</code>, <code>demo/repeat.ts</code></td></tr>
+    </table>
+  </div>
+
+  <h2>A practice to reuse</h2>
+  <div class="card">
+    <h3>Test what must not match, not only what must</h3>
+    <p>The first version of the mock semantic matcher compared words and flagged the corrected code (<code>const user = await loadUser(id)</code>) as a repeat of the mistake it was meant to catch. Writing the negative case, “does not flag the corrected code”, in <code>packages/core/test/core.test.ts</code> exposed it, and the matcher was rewritten. The change is recorded in <code>devpost/checklist.md</code> under Revisions.</p>
+    <p class="note">On another project: for any rule that detects something, write one test that it catches the bad input and one that it leaves the good input alone, before trusting it.</p>
+  </div>
+
+  <h2>Run it again</h2>
+  <div class="card">
+    <p><code>npm install &amp;&amp; npm run demo</code>, then open <a href="http://localhost:3000">localhost:3000</a>. In a second terminal: <code>npm run demo:capture</code>, then <code>npm run demo:repeat</code>. Tests: <code>npm test</code>.</p>
+    <p class="note">Mock mode (<code>SCAR_MOCK=1</code>) needs no API key; the demo scripts set it for you.</p>
+  </div>
+</main>
+</body>
+</html>
