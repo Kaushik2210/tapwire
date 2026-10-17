@@ -20,7 +20,9 @@
     "demo:setup": "tsx demo/setup.ts",
     "demo:repeat": "tsx demo/repeat.ts",
     "demo:capture": "tsx demo/capture.ts",
-    "a11y:contrast": "node scripts/contrast.mjs"
+    "a11y:contrast": "node scripts/contrast.mjs",
+    "live:test": "tsx scripts/live-test.ts",
+    "demo:snapshot": "tsx demo/snapshot.ts"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
