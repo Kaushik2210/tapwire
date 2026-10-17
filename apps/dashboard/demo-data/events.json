@@ -12,6 +12,7 @@
     "file": "src/routes/auth.js",
     "line": 6,
     "reason": "The agent rebuilt the login redirect from req.query again.",
+    "source": "check",
     "at": "2026-10-04T10:15:00.000Z"
   },
   {
@@ -33,6 +34,7 @@
     "file": "src/db/orders.js",
     "line": 8,
     "reason": "A new orders query was built by concatenating the id into the SQL string.",
+    "source": "hook",
     "at": "2026-10-08T13:15:00.000Z"
   },
   {
@@ -51,7 +53,7 @@
     "type": "new_mistake",
     "scarId": "scar-006",
     "id": "evt-008",
-    "at": "2026-10-17T08:31:22.861Z"
+    "at": "2026-10-17T13:19:52.451Z"
   },
   {
     "type": "repeat",
@@ -59,7 +61,8 @@
     "file": "src/routes/auth.js",
     "line": 9,
     "reason": "The route redirected to a URL taken straight from the request, so an attacker could send users to any site.",
+    "source": "agent",
     "id": "evt-009",
-    "at": "2026-10-17T08:31:25.484Z"
+    "at": "2026-10-17T13:19:56.266Z"
   }
 ]

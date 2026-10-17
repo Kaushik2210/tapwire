@@ -1,7 +1,7 @@
 // Adoption test: pack the CLI, install the tarball into a brand-new project the way a user would,
 // then run the whole workflow in a fresh git repository, including real `git commit` calls.
 // Run: npm run test:install   (needs network for `npm install`; uses mock mode, so no API key)
-import { execFileSync, spawnSync } from "node:child_process";
+import { execFileSync, spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, join } from "node:path";
@@ -81,6 +81,20 @@ try {
   try { parsed = JSON.parse(json.stdout); } catch { /* reported below */ }
   check("`check --json` is valid JSON that tools can read", !!parsed && parsed.ok === false && parsed.hits[0]?.file === "orders.js", json.stdout);
 
+  // 4b. The agent feedback loop: what an agent's post-edit hook would run, fed the edit as JSON on stdin.
+  const agentBad = sh("tapwire", ["agent-check"], { cwd: proj, env: withTapwire, input: JSON.stringify({ tool_name: "Write", tool_input: { file_path: join(proj, "orders.js") } }) });
+  check("`agent-check` exits 2 with a message the agent can act on when it repeats a mistake", agentBad.status === 2 && /reintroduces a mistake/.test(agentBad.stderr) && /orders\.js:2/.test(agentBad.stderr) && /do this instead/.test(agentBad.stderr) && agentBad.stdout.trim() === "", agentBad.stderr);
+  writeFileSync(join(proj, "clean.js"), "export const add = (a, b) => a + b;\n");
+  const agentOk = sh("tapwire", ["agent-check"], { cwd: proj, env: withTapwire, input: JSON.stringify({ tool_input: { file_path: "clean.js" } }) });
+  check("`agent-check` stays silent (exit 0) when the edited file is clean, even though another file is bad", agentOk.status === 0 && agentOk.stderr.trim() === "", agentOk.stderr);
+  const agentNoInput = sh("tapwire", ["agent-check"], { cwd: proj, env: withTapwire, input: "" });
+  check("`agent-check` with no hook input falls back to checking the whole tree", agentNoInput.status === 2, agentNoInput.stderr);
+  const agentSetup = tw(proj, ["agent-setup"]);
+  check("`agent-setup` prints a ready-to-paste hook config", agentSetup.status === 0 && /"command": "tapwire agent-check"/.test(agentSetup.stdout));
+  const events = JSON.parse(readFileSync(join(proj, ".scars/events.json"), "utf8"));
+  check("repeats caught by the agent hook are recorded once, with their source", events.filter((e) => e.type === "repeat" && e.source === "agent").length === 1, JSON.stringify(events));
+  rmSync(join(proj, "clean.js"));
+
   // 5. The pre-commit hook, with real commits.
   git(proj, "add", "-A");
   const blocked = sh("git", ["commit", "-m", "add orders"], { cwd: proj, env: withTapwire, noShell: true });
@@ -103,6 +117,34 @@ try {
   check("CI mode (`--base main`) fails a branch that repeats a mistake", ci.status === 1 && /report\.js/.test(ci.stdout), ci.stdout);
   const ciBad = tw(proj, ["check", "--base", "origin/missing", "--offline"]);
   check("CI mode explains a bad ref instead of crashing", ciBad.status === 2 && /fetch-depth/.test(ciBad.stderr), ciBad.stderr);
+
+  // 6b. Watch mode, as a live process: it must flag a repeat the moment a file is written.
+  git(proj, "checkout", "-q", "main");
+  const watcher = spawn("tapwire", ["watch"], { cwd: proj, env: { ...process.env, ...withTapwire }, shell: win, stdio: ["ignore", "pipe", "pipe"] });
+  let watched = "";
+  watcher.stdout.on("data", (d) => (watched += d));
+  const waitFor = async (re, ms) => {
+    const end = Date.now() + ms;
+    while (!re.test(watched) && Date.now() < end) await new Promise((r) => setTimeout(r, 150));
+    return re.test(watched);
+  };
+  check("`tapwire watch` starts and says what it is watching", await waitFor(/Watching/, 8000), watched);
+  writeFileSync(join(proj, "live.js"), 'const q = "SELECT * FROM t WHERE a = " + a;\n');
+  check("`tapwire watch` flags the repeat the moment the file is written", await waitFor(/repeated at live\.js:1/, 10000), watched);
+  if (win) spawnSync("taskkill", ["/pid", String(watcher.pid), "/t", "/f"]);
+  else watcher.kill("SIGTERM");
+  const afterWatch = JSON.parse(readFileSync(join(proj, ".scars/events.json"), "utf8"));
+  check("the watch catch is recorded with source `watch`", afterWatch.some((e) => e.source === "watch" && e.file === "live.js"));
+  rmSync(join(proj, "live.js"));
+
+  // 6c. `capture` with no argument uses the latest commit.
+  writeFileSync(join(proj, "pagination.js"), "const page = items.slice(page * size, (page + 1) * size);\n");
+  git(proj, "add", "pagination.js");
+  git(proj, "commit", "-qm", "init pagination", "--no-verify");
+  writeFileSync(join(proj, "pagination.js"), "const page = items.slice((page - 1) * size, page * size);\n");
+  git(proj, "commit", "-qam", "fix: pagination skipped the first page", "--no-verify");
+  const capHead = tw(proj, ["capture"]);
+  check("`tapwire capture` with no argument captures the latest commit", capHead.status === 0 && /Captured scar-002/.test(capHead.stdout), capHead.stdout + capHead.stderr);
 
   // 7. Uninstall.
   const un = tw(proj, ["hook", "uninstall"]);

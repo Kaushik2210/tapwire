@@ -4,6 +4,8 @@ import { dayLabel, formatDateTime, loadRepo } from "../../lib/data";
 import { EmptyState, ErrorPanel, PageHead, SeverityBadge } from "../../components/ui";
 
 export const metadata: Metadata = { title: "Caught repeats" };
+
+const SOURCE_LABEL = { check: "manual check", hook: "pre-commit hook", agent: "agent hook", watch: "watch mode" } as const;
 export const dynamic = "force-dynamic";
 
 export default function Repeats() {
@@ -45,6 +47,7 @@ export default function Repeats() {
                       <h3><Link href={`/scars/${e.scarId}`}>{s?.title ?? e.scarId}</Link></h3>
                       <span style={{ display: "inline-flex", gap: "0.625rem", alignItems: "center" }}>
                         {s && <SeverityBadge severity={s.severity} />}
+                        {e.source && <span className="src" title="How this repeat was caught">via {SOURCE_LABEL[e.source]}</span>}
                         <span className="blocked">Blocked</span>
                       </span>
                     </div>

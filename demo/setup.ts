@@ -165,12 +165,12 @@ writeScars(DEMO, scars);
 
 // ---- sample event history ----------------------------------------------------
 
-const history: { day: number; type: ScarEvent["type"]; scar: number; file?: string; line?: number; reason?: string }[] = [
+const history: { day: number; type: ScarEvent["type"]; scar: number; file?: string; line?: number; reason?: string; source?: ScarEvent["source"] }[] = [
   { day: 14, type: "new_mistake", scar: 1 },
-  { day: 13, type: "repeat", scar: 1, file: "src/routes/auth.js", line: 6, reason: "The agent rebuilt the login redirect from req.query again." },
+  { day: 13, type: "repeat", scar: 1, file: "src/routes/auth.js", line: 6, reason: "The agent rebuilt the login redirect from req.query again.", source: "check" },
   { day: 12, type: "new_mistake", scar: 2 },
   { day: 10, type: "new_mistake", scar: 3 },
-  { day: 9, type: "repeat", scar: 2, file: "src/db/orders.js", line: 8, reason: "A new orders query was built by concatenating the id into the SQL string." },
+  { day: 9, type: "repeat", scar: 2, file: "src/db/orders.js", line: 8, reason: "A new orders query was built by concatenating the id into the SQL string.", source: "hook" },
   { day: 7, type: "new_mistake", scar: 4 },
   { day: 5, type: "new_mistake", scar: 5 },
 ];
@@ -178,7 +178,7 @@ const events: ScarEvent[] = history.map((h, i) => ({
   id: `evt-${String(i + 1).padStart(3, "0")}`,
   type: h.type,
   scarId: `scar-${String(h.scar).padStart(3, "0")}`,
-  ...(h.file ? { file: h.file, line: h.line, reason: h.reason } : {}),
+  ...(h.file ? { file: h.file, line: h.line, reason: h.reason, ...(h.source ? { source: h.source } : {}) } : {}),
   at: daysAgo(h.day, 9 + (i % 5)).toISOString(),
 }));
 writeEvents(DEMO, events);

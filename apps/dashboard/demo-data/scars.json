@@ -60,8 +60,8 @@
     "badPattern": "return items.slice(page * size, (page + 1) * size);",
     "goodPattern": "return items.slice((page - 1) * size, page * size);",
     "severity": "medium",
-    "sourceCommit": "1929009",
+    "sourceCommit": "863d8c9",
     "id": "scar-006",
-    "createdAt": "2026-10-17T08:31:22.861Z"
+    "createdAt": "2026-10-17T13:19:52.451Z"
   }
 ]
