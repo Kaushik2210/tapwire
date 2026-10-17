@@ -1,6 +1,6 @@
 {
   "name": "@kaushik2210/tapwire",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Turn every mistake an AI coding agent makes into an enforced rule, and measure how often it repeats fixed mistakes.",
   "license": "MIT",
   "type": "module",

@@ -19,6 +19,8 @@ import {
   uninstallHook,
 } from "@scar/core";
 
+import pkg from "../package.json";
+
 // Pick up ANTHROPIC_API_KEY etc. from a local .env if there is one (never committed).
 try {
   process.loadEnvFile(".env");
@@ -36,6 +38,7 @@ function fail(err: unknown): never {
 
 const program = new Command("tapwire")
   .description("Turn an AI agent's fixed mistakes into enforced rules, and measure repeats.")
+  .version(pkg.version, "-v, --version")
   .option("-r, --repo <path>", "repository to work in", process.cwd());
 
 const repoOf = () => resolve(program.opts().repo as string);
