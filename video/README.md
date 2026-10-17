@@ -1,6 +1,6 @@
 # TapWire demo video
 
-Source for the demo video: about 2 minutes 20 seconds, 1920×1080, 30 fps, with a male Indian-English AI voice-over (Gaurav) and captions.
+Source for the demo video: about 2 minutes 10 seconds, 1920×1080, 30 fps, with a male Indian-English AI voice-over (Gaurav) and captions.
 
 Everything on screen is real:
 
