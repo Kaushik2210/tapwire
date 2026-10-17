@@ -1,6 +1,6 @@
 # TapWire demo video
 
-Source for the demo video: about 2 minutes 20 seconds, 1920×1080, 30 fps, with an Indian-English AI voice-over and captions.
+Source for the demo video: about 2 minutes 20 seconds, 1920×1080, 30 fps, with a male Indian-English AI voice-over (Gaurav) and captions.
 
 Everything on screen is real:
 
@@ -13,7 +13,8 @@ Everything on screen is real:
 | Path | What it is |
 | --- | --- |
 | `narration.json` | The words of each scene. **Edit these to change the voice-over.** |
-| `public/audio/*.mp3` | One narration clip per scene (AI voice). |
+| `public/audio/*.mp3` | One narration clip per scene (the male voice, Gaurav). |
+| `public/audio-vanishree/*.mp3` | An earlier female take (Vanishree) for 7 of the 8 scenes, kept as an alternative. Copy files over `public/audio/` to switch. |
 | `capture.mjs` | Records the real terminal output and the 1080p dashboard shots. |
 | `src/` | The Remotion video: scenes, terminal and browser mock-ups, captions, timing. |
 | `out/` | Rendered video (not committed). |
