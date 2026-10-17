@@ -22,12 +22,15 @@
     "demo:capture": "tsx demo/capture.ts",
     "a11y:contrast": "node scripts/contrast.mjs",
     "live:test": "tsx scripts/live-test.ts",
-    "demo:snapshot": "tsx demo/snapshot.ts"
+    "demo:snapshot": "tsx demo/snapshot.ts",
+    "build:cli": "node scripts/build-cli.mjs",
+    "test:install": "node scripts/install-test.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
-    "vitest": "^2.1.0"
+    "vitest": "^2.1.0",
+    "esbuild": "^0.25.0"
   }
 }

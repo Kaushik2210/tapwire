@@ -1,10 +1,40 @@
 {
-  "name": "@scar/cli",
+  "name": "@kaushik2210/tapwire",
   "version": "0.1.0",
-  "private": true,
+  "description": "Turn every mistake an AI coding agent makes into an enforced rule, and measure how often it repeats fixed mistakes.",
+  "license": "MIT",
   "type": "module",
-  "bin": { "scar": "src/index.ts" },
+  "bin": {
+    "tapwire": "dist/tapwire.mjs",
+    "scar": "dist/tapwire.mjs"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "ai-agents",
+    "coding-agents",
+    "pre-commit",
+    "code-quality",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kaushik2210/tapwire.git"
+  },
+  "homepage": "https://github.com/Kaushik2210/tapwire#readme",
+  "scripts": {
+    "prepack": "node ../../scripts/build-cli.mjs"
+  },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  },
+  "devDependencies": {
     "@scar/core": "*",
     "commander": "^12.1.0"
   }
