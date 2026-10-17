@@ -75,7 +75,7 @@ Clean, modern, dark-mode friendly, responsive, polished enough to feel like a fi
 Everything under Core Journey and Features: CLI capture/check/export, the four-page dashboard with empty/loading/error states, mock mode, `demo-repo/` with `npm run demo`, tests for matcher and rate, README, MIT license.
 
 ## Deferred From the POC
-- Git hook / CI enforcement — manual `scar check` is enough to prove the loop.
+- CI enforcement — manual `scar check` or the local pre-commit hook is enough to prove the loop. (A local pre-commit hook, `scar hook install`, was added during the build; see `checklist.md > Revisions`.)
 - Multi-repo and team views — one repo path at a time.
 - Rule formats for other agents beyond AGENTS.md and CLAUDE.md.
 

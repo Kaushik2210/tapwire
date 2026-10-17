@@ -37,7 +37,7 @@ From a clean clone, `npm install && npm run demo` sets up a seeded demo repo wit
 - Tests for the matcher and the Amnesia Rate; README; MIT license.
 
 ## Later
-Git hooks and CI integration, more agents' rule file formats, multi-repo views, team sharing of scars.
+CI integration (a local pre-commit hook was added during the build), more agents' rule file formats, multi-repo views, team sharing of scars.
 
 ## Explicitly Cut
 - Auth, accounts, hosting or deployment: not needed to prove the loop.

@@ -86,19 +86,28 @@ Build mode: fast (the learner asked to finish fast; hands-on checkpoints are lef
 
 ## Final Review
 
+Mechanical verification of the finished build, run from a fresh clone of the public repo: `npm ci`, 19 unit tests pass, typecheck clean, dashboard production build succeeds, `demo:setup` then `demo:capture` then `demo:repeat` run end to end (rate 29% → 25% → 33%), and with the pre-commit hook installed a commit that reintroduces a scar is refused. Not verified: live LLM mode (no API key was available).
+
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
 - [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
 - [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: not yet done
-Route and stops: not yet done
+Activity and evidence: map generated from the finished code (snapshot of commit 71b0ce0); the guided walk-through with the learner has not happened, so the two boxes above stay unchecked.
+Route and stops: reference route only, not toured: `packages/cli/src/index.ts` (check command) → `packages/core/src/check.ts` (`checkRepo`) → `packages/core/src/rate.ts` and `apps/dashboard/app/page.tsx`.
 Edit outcome: not yet done
 Reflection: not yet done
 Activity mode: not yet done
 
 ## Revisions
+
+- Product renamed to TapWire (from Scar Tissue) — the learner chose the new name after the planning docs were approved; the `scar` command and `.scars/` folder keep their names as the data concepts.
+- Added `scar hook install|uninstall` (a local pre-commit hook), which `scope.md > Later` and `prd.md > Deferred From the POC` had deferred — the learner asked for improvements to raise the entry's strength, and the "enforced" claim was weak without it. It reuses `scar check --staged` and never overwrites a hook it did not write.
+- Added a Try it page, live refresh, command palette, interactive chart, searchable scar list, copy buttons and a theme toggle to the dashboard — learner-requested polish; none changes the kernel or the core journey. `spec.md > Components` lists them.
+- Mock semantic matcher changed from token overlap to a whitespace- and quote-insensitive substring match — the build found the first version flagged corrected code (for example `await loadUser`) as a repeat; `packages/core/test/core.test.ts` now pins that case.
+- The Amnesia Rate explanation was added to the dashboard — a caught repeat raises the rate, which reads backwards without a note.
+- Dashboard visual design redone (editorial type, segmented meter, event-lane chart) — the first version looked like generic default styling to the learner.
 
