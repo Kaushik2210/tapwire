@@ -63,7 +63,7 @@ Re-run `npm run demo:setup` at any time to rebuild the demo from scratch.
 
 ## Use TapWire in your own project
 
-You need Node 20+ and git. TapWire works in any git repository and any language, because it reads your diffs.
+You need Node 20+ and git. TapWire works in any git repository. It reads diffs, so it is not tied to one language, but it has only been tested here on JavaScript code.
 
 ### 1. Install
 
