@@ -2,6 +2,8 @@
 
 **Turns every mistake an AI coding agent makes into a permanent, enforced rule, and measures how often the agent repeats fixed mistakes.**
 
+**Live demo: https://tapwire-xi.vercel.app** (the hosted dashboard shows bundled sample data; paste code on its [Try it](https://tapwire-xi.vercel.app/try) page to see a scar catch a repeat)
+
 ## The problem
 
 AI coding agents repeat bugs you already fixed and forget decisions you already made. The usual fix is a note in `AGENTS.md` or a rules file, but a note is passive: it stores a lesson, it doesn't enforce it, and it never tells you whether the agent actually learned anything.
@@ -94,7 +96,7 @@ What has and has not been tested in live mode:
 
 ## Deploy the dashboard
 
-The dashboard is a standard Next.js app, and it needs no database or API key to show the demo: when no repository is configured and there is no `demo-repo/`, it shows a bundled snapshot of the demo data (`apps/dashboard/demo-data/`) and labels it "sample data". Refresh the snapshot with `npm run demo:setup && npm run demo:capture && npm run demo:repeat && npm run demo:snapshot`.
+It is deployed at https://tapwire-xi.vercel.app (Vercel, root directory `apps/dashboard`, no environment variables; every push to `main` redeploys). The dashboard is a standard Next.js app, and it needs no database or API key to show the demo: when no repository is configured and there is no `demo-repo/`, it shows a bundled snapshot of the demo data (`apps/dashboard/demo-data/`) and labels it "sample data". Refresh the snapshot with `npm run demo:setup && npm run demo:capture && npm run demo:repeat && npm run demo:snapshot`.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKaushik2210%2Ftapwire&root-directory=apps%2Fdashboard&project-name=tapwire)
 

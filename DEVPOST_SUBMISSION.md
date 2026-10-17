@@ -17,6 +17,8 @@ Everything below is checkable in this repository.
 - **Not verified:** how the real model behaves. The live code path is tested against a local stand-in for the API, but `npm run live:test` (about four real requests) has not been run with a real key. Run it once and note the result before submitting.
 - **Honest caveat worth knowing:** a blocked repeat is recorded as a repeat, so the rate goes *up* when the guard fires and *down* when a new scar is captured.
 
+- **Links:** repository https://github.com/Kaushik2210/tapwire; live dashboard https://tapwire-xi.vercel.app (optional on Devpost; it does not replace the video). The live site shows bundled sample data, so say so rather than implying it is a hosted service.
+
 ## 2. Questions to answer in your own words
 
 Use these to write the Devpost fields yourself.

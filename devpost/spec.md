@@ -30,7 +30,9 @@ Everything runs locally; deployment is not part of the PoC. Requirements: Node 2
 - Try it: `npm install && npm run demo` (the demo sets `SCAR_MOCK=1`, no key needed). Open http://localhost:3000.
 - Scripted repeat for the video: `npm run demo:repeat` (reintroduces a past mistake, runs `scar check`, then `scar export`); refresh the dashboard.
 - Live mode: copy `.env.example` to `.env`, set `ANTHROPIC_API_KEY`, unset `SCAR_MOCK`.
-- Public repository: https://github.com/Kaushik2210/tapwire (public, MIT, no other collaborators). Demo video URL: not recorded yet.
+- Public repository: https://github.com/Kaushik2210/tapwire (public, MIT, no other collaborators).
+- Live dashboard (optional deployment, bundled sample data): https://tapwire-xi.vercel.app
+- Demo video URL: not recorded yet.
 - Recording: screen-record the terminal and dashboard side by side. Submission requires the demo video and a public GitHub repo.
 
 ## Look and Feel
