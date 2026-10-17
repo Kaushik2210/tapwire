@@ -3,8 +3,9 @@ import { parseAddedLines, type AddedLine } from "./diff";
 import { complete, isMock, parseJsonReply, ScarError } from "./llm";
 import { matchRegex, matchSimilar } from "./matcher";
 import { TARGET_FILES } from "./export";
-import { addEvent, readScars, SCARS_DIR } from "./store";
-import type { Hit, Scar } from "./types";
+import { isAbsolute, relative } from "node:path";
+import { addEvent, readEvents, readScars, SCARS_DIR } from "./store";
+import type { EventSource, Hit, Scar } from "./types";
 
 export interface CheckResult {
   hits: Hit[];
@@ -105,6 +106,33 @@ export interface CheckOptions {
   semantic?: boolean;
   /** Compare against a base ref instead of the working tree, for CI (e.g. "origin/main"). */
   base?: string;
+  /** Only report hits in these files (paths relative to the repo, or absolute). Used for per-edit agent checks. */
+  files?: string[];
+  /** Recorded on each repeat event so the dashboard can show how it was caught. */
+  source?: EventSource;
+}
+
+/** "C:\repo\src\a.js" or "./src/a.js" to "src/a.js", relative to the repo. */
+export function normalizeFile(repo: string, file: string): string {
+  const rel = isAbsolute(file) ? relative(repo, file) : file;
+  return rel.replace(/\\/g, "/").replace(/^\.\//, "");
+}
+
+const DUPLICATE_WINDOW_MS = 10 * 60 * 1000;
+
+/** Record repeat events, skipping a line that was already recorded recently (an agent re-editing the same line). */
+export function recordHits(repo: string, hits: Hit[], source?: EventSource): Hit[] {
+  const events = readEvents(repo);
+  const fresh: Hit[] = [];
+  for (const h of hits) {
+    const dup = events.some(
+      (e) => e.type === "repeat" && e.scarId === h.scarId && e.file === h.file && e.line === h.line && Date.now() - Date.parse(e.at) < DUPLICATE_WINDOW_MS,
+    );
+    if (dup) continue;
+    addEvent(repo, { type: "repeat", scarId: h.scarId, file: h.file, line: h.line, reason: h.reason, ...(source ? { source } : {}) });
+    fresh.push(h);
+  }
+  return fresh;
 }
 
 export async function checkRepo(repo: string, opts: CheckOptions = {}): Promise<CheckResult> {
@@ -113,7 +141,12 @@ export async function checkRepo(repo: string, opts: CheckOptions = {}): Promise<
     return { hits: [], scarCount: 0, notice: "No scars saved yet. Run `scar capture <commit-sha>` first." };
   }
 
-  const { added, regexHits } = checkDiff(scars, workingDiff(repo, !!opts.staged, opts.base));
+  let { added, regexHits } = checkDiff(scars, workingDiff(repo, !!opts.staged, opts.base));
+  if (opts.files?.length) {
+    const only = new Set(opts.files.map((f) => normalizeFile(repo, f)));
+    added = added.filter((l) => only.has(l.file));
+    regexHits = regexHits.filter((h) => only.has(h.file));
+  }
   let hits = [...regexHits];
   let notice: string | undefined;
 
@@ -133,10 +166,6 @@ export async function checkRepo(repo: string, opts: CheckOptions = {}): Promise<
     return true;
   });
 
-  if (opts.record !== false) {
-    for (const h of hits) {
-      addEvent(repo, { type: "repeat", scarId: h.scarId, file: h.file, line: h.line, reason: h.reason });
-    }
-  }
+  if (opts.record !== false) recordHits(repo, hits, opts.source);
   return { hits, notice, scarCount: scars.length, checked: added.length };
 }

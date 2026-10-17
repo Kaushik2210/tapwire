@@ -1,13 +1,15 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { Command } from "commander";
+import { Command, Option } from "commander";
 import {
   captureScar,
   checkRepo,
   computeAmnesiaRate,
   ensureStore,
   exportScars,
+  filesFromHookInput,
+  formatAgentMessage,
   installHook,
   isHookInstalled,
   isMock,
@@ -17,6 +19,8 @@ import {
   START,
   TARGET_FILES,
   uninstallHook,
+  watchRepo,
+  type EventSource,
 } from "@scar/core";
 
 import pkg from "../package.json";
@@ -45,7 +49,7 @@ const repoOf = () => resolve(program.opts().repo as string);
 
 /** The command a pre-commit hook runs: `tapwire` from PATH if there is one, otherwise this exact file. */
 function hookCommand(semantic: boolean): string {
-  const flags = `check --staged${semantic ? "" : " --offline"}`;
+  const flags = `check --staged --source hook${semantic ? "" : " --offline"}`;
   const self = fileURLToPath(import.meta.url).replace(/\\/g, "/");
   const node = process.execPath.replace(/\\/g, "/");
   const direct = self.endsWith(".ts") ? `"${node}" --import tsx "${self}"` : `"${node}" "${self}"`;
@@ -80,7 +84,8 @@ program
       }
       const files = exportScars(repo);
       console.log(c.green(`✔ Added the Scars section to ${files.join(" and ")} so your AI agent reads it first`));
-      console.log(`\nNext: fix a bug, commit the fix, then run ${c.bold("tapwire capture <commit-sha>")}.`);
+      console.log(`\nNext: fix a bug, commit the fix, then run ${c.bold("tapwire capture")} (it uses your latest commit).`);
+      console.log(c.dim("To make your AI agent hear about a repeat right after each edit: tapwire agent-setup"));
       console.log(c.dim("Run `tapwire status` any time to see how it is going."));
     } catch (err) {
       fail(err);
@@ -88,13 +93,13 @@ program
   });
 
 program
-  .command("capture <commit-sha>")
-  .description("Write a scar from a fixing commit")
+  .command("capture [commit-sha]")
+  .description("Write a scar from a fixing commit (default: the latest commit)")
   .option("--export", "also refresh the Scars section in AGENTS.md and CLAUDE.md")
-  .action(async (sha: string, opts: { export?: boolean }) => {
+  .action(async (sha: string | undefined, opts: { export?: boolean }) => {
     try {
       const repo = repoOf();
-      const scar = await captureScar(repo, sha);
+      const scar = await captureScar(repo, sha ?? "HEAD");
       console.log(c.green(`✔ Captured ${scar.id}: ${c.bold(scar.title)} (${scar.severity})`));
       console.log(c.dim(`  ${scar.whatWentWrong}`));
       console.log(c.dim(`  Saved to .scars/scars.json${isMock() ? " (mock mode)" : ""}`));
@@ -117,7 +122,9 @@ program
   .option("--offline", "regex only: fast, free, no network")
   .option("--json", "print machine-readable JSON")
   .option("--no-record", "do not log repeat events")
-  .action(async (opts: { staged?: boolean; base?: string; offline?: boolean; json?: boolean; record: boolean }) => {
+  .option("--file <path...>", "only report hits in these files")
+  .addOption(new Option("--source <source>", "how this check was triggered").choices(["check", "hook", "agent", "watch"]).default("check").hideHelp())
+  .action(async (opts: { staged?: boolean; base?: string; offline?: boolean; json?: boolean; record: boolean; file?: string[]; source: EventSource }) => {
     try {
       const repo = repoOf();
       const res = await checkRepo(repo, {
@@ -125,6 +132,8 @@ program
         base: opts.base,
         semantic: !opts.offline,
         record: opts.record,
+        files: opts.file,
+        source: opts.source,
       });
       const scars = new Map(readScars(repo).map((s) => [s.id, s]));
       const { rate } = computeAmnesiaRate(readEvents(repo));
@@ -204,6 +213,94 @@ program
     } catch (err) {
       fail(err);
     }
+  });
+
+async function readStdin(): Promise<string> {
+  const chunks: Buffer[] = [];
+  for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
+  return Buffer.concat(chunks).toString("utf8");
+}
+
+program
+  .command("agent-check")
+  .description("Run right after an AI agent edits a file: tell it immediately if it repeated a past mistake")
+  .option("--file <path...>", "the edited file(s); otherwise they are read from the JSON an agent hook sends on stdin")
+  .option("--semantic", "also run the LLM pass (slower, paid); default is the fast offline check")
+  .action(async (opts: { file?: string[]; semantic?: boolean }) => {
+    // Exit codes follow the agent-hook convention: 0 = fine, 2 = tell the agent (message on stderr), 1 = tool error (never blocks).
+    try {
+      const repo = repoOf();
+      let files = opts.file ?? [];
+      if (files.length === 0 && !process.stdin.isTTY) files = filesFromHookInput(await readStdin());
+      const res = await checkRepo(repo, { files: files.length ? files : undefined, semantic: !!opts.semantic, source: "agent" });
+      if (res.hits.length === 0) return;
+      console.error(formatAgentMessage(res.hits, readScars(repo)));
+      process.exitCode = 2;
+    } catch (err) {
+      console.error(`TapWire could not check that edit: ${(err as Error).message}`);
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command("watch")
+  .description("Watch the repository and flag a repeat of a past mistake the moment it is written to disk")
+  .option("--semantic", "also run the LLM pass (slower, paid)")
+  .action((opts: { semantic?: boolean }) => {
+    try {
+      const repo = repoOf();
+      const scars = new Map(readScars(repo).map((s) => [s.id, s]));
+      if (scars.size === 0) console.log(c.yellow("No scars yet: capture one first (tapwire capture <commit-sha>)."));
+      console.log(c.bold(`Watching ${repo}`) + c.dim("  (Ctrl+C to stop)"));
+      const stop = watchRepo(
+        repo,
+        (hits) => {
+          process.stdout.write("\x07");
+          for (const h of hits) {
+            const s = scars.get(h.scarId);
+            console.log(c.red(c.bold(`\n✖ ${new Date().toLocaleTimeString()}  ${s?.title ?? h.scarId} repeated at ${h.file}:${h.line}`)));
+            if (h.text) console.log(c.dim(`  > ${h.text}`));
+            console.log(`  Why: ${s?.whatWentWrong ?? h.reason}`);
+            if (s) console.log(`  Instead: ${s.goodPattern}`);
+          }
+        },
+        { semantic: !!opts.semantic, onError: (err) => console.error(c.dim(`check failed: ${err.message}`)) },
+      );
+      process.on("SIGINT", () => {
+        stop();
+        process.exit(0);
+      });
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+program
+  .command("agent-setup")
+  .description("Show how to make an AI agent hear about a repeat right after each edit")
+  .action(() => {
+    console.log(`${c.bold("Give your AI agent instant feedback")}
+
+TapWire cannot control what a model writes, but it can tell the agent the moment it repeats a
+fixed mistake, so the agent corrects itself in the same turn.
+
+${c.bold("1. Agents with post-edit command hooks")} (the command receives the edit as JSON on stdin; exit code 2 sends stderr back to the agent):
+
+  {
+    "hooks": {
+      "PostToolUse": [
+        { "matcher": "Edit|Write|MultiEdit",
+          "hooks": [ { "type": "command", "command": "tapwire agent-check" } ] }
+      ]
+    }
+  }
+
+${c.bold("2. Any other agent or editor")}: run ${c.bold("tapwire watch")} in a terminal. It prints an alert (and rings the bell)
+the instant a repeat is written to disk.
+
+${c.bold("3. Always")}: the pre-commit hook and ${c.bold("tapwire check --base origin/main")} in CI are the hard stop.
+
+Test it by hand:  echo '{"tool_input":{"file_path":"src/app.js"}}' | tapwire agent-check`);
   });
 
 const hook = program.command("hook").description("Block commits that reintroduce a past scar");

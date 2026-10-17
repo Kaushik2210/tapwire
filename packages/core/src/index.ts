@@ -8,4 +8,6 @@ export * from "./capture";
 export * from "./check";
 export * from "./export";
 export * from "./hook";
+export * from "./agent";
+export * from "./watch";
 export { MOCK_SCARS } from "./fixtures";

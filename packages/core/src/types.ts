@@ -14,6 +14,9 @@ export interface Scar {
 
 export type EventType = "new_mistake" | "repeat";
 
+/** Where a repeat was caught: a manual or CI check, the pre-commit hook, an agent post-edit hook, or watch mode. */
+export type EventSource = "check" | "hook" | "agent" | "watch";
+
 export interface ScarEvent {
   id: string;
   type: EventType;
@@ -21,6 +24,7 @@ export interface ScarEvent {
   file?: string;
   line?: number;
   reason?: string;
+  source?: EventSource;
   at: string;
 }
 
