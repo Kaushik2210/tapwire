@@ -1,5 +1,7 @@
 # TapWire
 
+[![CI](https://github.com/Kaushik2210/tapwire/actions/workflows/ci.yml/badge.svg)](https://github.com/Kaushik2210/tapwire/actions/workflows/ci.yml)
+
 **Turns every mistake an AI coding agent makes into a permanent, enforced rule, and measures how often the agent repeats fixed mistakes.**
 
 **Live demo: https://tapwire-xi.vercel.app** (the hosted dashboard shows bundled sample data; paste code on its [Try it](https://tapwire-xi.vercel.app/try) page to see a scar catch a repeat)
